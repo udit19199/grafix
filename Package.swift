@@ -11,5 +11,7 @@ let package = Package(
   name: "Grafix",
   platforms: [.macOS(.v14)],
   products: [],
-  targets: []
+  targets: [
+    .target(name: "GrafixCore", resources: [.copy("Resources/Fonts")]),
+  ]
 )
