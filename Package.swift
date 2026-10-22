@@ -10,10 +10,17 @@ import PackageDescription
 let package = Package(
   name: "Grafix",
   platforms: [.macOS(.v14)],
-  products: [],
+  products: [
+    .executable(name: "Grafix", targets: ["GrafixApp"]),
+  ],
   targets: [
     .target(name: "GrafixCore", resources: [.copy("Resources/Fonts")]),
     .target(name: "GrafixRender", dependencies: ["GrafixCore"]),
     .target(name: "GrafixPort"),
+    .executableTarget(
+      name: "GrafixApp",
+      dependencies: ["GrafixCore", "GrafixRender", "GrafixPort"],
+      exclude: ["Resources/AppIcon.icns"]
+    ),
   ]
 )
