@@ -4,7 +4,7 @@
 // Source: excalidraw/packages/excalidraw/components/icons.tsx
 // Icons are derived from https://fontawesome.com/icons (Font Awesome license) and
 // tabler-icons, matching upstream attribution in the source file.
-// Excalidraw commit: 4c37956ba5f04ec342a9d9d5891a38f22c5b7b4e
+// Excalidraw commit: 1d4dc2c0e6e476911d0760e9c3cf3694f2d43384
 //
 // Geometry is normalised into a 512x512 box: every path uses only absolute
 // M, L, C and Z commands, and stroke widths are already expressed in that box.
@@ -17,11 +17,15 @@ public struct IconShape: Sendable, Equatable {
   public let filled: Bool
   /// Stroke width in the 512 coordinate space. Use 0 when `filled` is true.
   public let strokeWidth: Double
+  /// true means the fill is the editor background colour (Excalidraw's handlerColor):
+  /// draw it by clearing what is beneath, not with the icon colour.
+  public let knockout: Bool
 
-  public init(d: String, filled: Bool, strokeWidth: Double) {
+  public init(d: String, filled: Bool, strokeWidth: Double, knockout: Bool = false) {
     self.d = d
     self.filled = filled
     self.strokeWidth = strokeWidth
+    self.knockout = knockout
   }
 }
 
@@ -37,10 +41,39 @@ public struct PortIcon: Sendable, Equatable {
 
 public enum PortIcons {
   /// The excalidraw repo commit the icons were extracted from, written by the script.
-  public static let repoCommit: String = "4c37956ba5f04ec342a9d9d5891a38f22c5b7b4e"
+  public static let repoCommit: String = "1d4dc2c0e6e476911d0760e9c3cf3694f2d43384"
 
   /// Icon name (lowercase, e.g. "rectangle", "freedraw", "undo") to icon.
   public static let all: [String: PortIcon] = [
+    "adjustments": PortIcon(
+      name: "adjustments",
+      shapes: [
+        IconShape(d: "M298.667 128M256 128C256 151.564 275.103 170.667 298.667 170.667C322.231 170.667 341.333 151.564 341.333 128C341.333 104.436 322.231 85.333 298.667 85.333C275.103 85.333 256 104.436 256 128", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 128L256 128", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M341.333 128L426.667 128", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.667 256M128 256C128 279.564 147.103 298.667 170.667 298.667C194.231 298.667 213.333 279.564 213.333 256C213.333 232.436 194.231 213.333 170.667 213.333C147.103 213.333 128 232.436 128 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 256L128 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M213.333 256L426.667 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M362.667 384M320 384C320 407.564 339.103 426.667 362.667 426.667C386.231 426.667 405.333 407.564 405.333 384C405.333 360.436 386.231 341.333 362.667 341.333C339.103 341.333 320 360.436 320 384", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 384L320 384", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M405.333 384L426.667 384", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "alerttriangle": PortIcon(
+      name: "alerttriangle",
+      shapes: [
+        IconShape(d: "M218.453 84.416L38.784 384.363C31.251 397.416 31.208 413.486 38.67 426.58C46.132 439.674 59.98 447.828 75.051 448L434.411 448C449.481 447.828 463.329 439.674 470.791 426.58C478.253 413.486 478.21 397.416 470.677 384.363L290.987 84.416C283.292 71.747 269.543 64.011 254.72 64.011C239.897 64.011 226.148 71.747 218.453 84.416Z", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 192L256 277.333", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 362.667L256.213 362.667", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "alignbottom": PortIcon(
+      name: "alignbottom",
+      shapes: [
+        IconShape(d: "M85.325 426.675L426.675 426.675", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M176 80L165.325 80C141.773 80 122.675 99.098 122.675 122.675L122.675 304C122.675 327.552 141.773 346.675 165.325 346.675L176 346.675C199.552 346.675 218.675 327.578 218.675 304L218.675 122.675C218.675 99.123 199.552 80 176 80ZM346.675 148.915L336 148.915C312.448 148.915 293.325 168.038 293.325 191.59L293.325 304C293.325 327.552 312.422 346.675 336 346.675L346.675 346.675C370.227 346.675 389.325 327.578 389.325 304L389.325 191.59C389.325 168.038 370.227 148.915 346.675 148.915Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "aligncenter": PortIcon(
       name: "aligncenter",
       shapes: [
@@ -64,6 +97,23 @@ public enum PortIcons {
         IconShape(d: "M304 122.675L122.675 122.675C99.123 122.675 80 141.773 80 165.325L80 176C80 199.552 99.098 218.675 122.675 218.675L304 218.675C327.552 218.675 346.675 199.552 346.675 176L346.675 165.325C346.675 141.773 327.578 122.675 304 122.675ZM299.085 293.325L186.675 293.325C163.123 293.325 144 312.422 144 336L144 346.675C144 370.227 163.098 389.325 186.675 389.325L299.059 389.325C322.637 389.325 341.734 370.227 341.734 346.675L341.734 336C341.734 312.448 322.637 293.325 299.085 293.325Z", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "aligntop": PortIcon(
+      name: "aligntop",
+      shapes: [
+        IconShape(d: "M85.325 85.325L426.675 85.325", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M346.675 165.325L336 165.325C312.448 165.325 293.325 184.448 293.325 208L293.325 389.325C293.325 412.877 312.422 432 336 432L346.675 432C370.227 432 389.325 412.902 389.325 389.325L389.325 208C389.325 184.448 370.227 165.325 346.675 165.325ZM176 165.325L165.325 165.325C141.773 165.325 122.675 184.448 122.675 208L122.675 304C122.675 327.552 141.773 346.675 165.325 346.675L176 346.675C199.552 346.675 218.675 327.578 218.675 304L218.675 208C218.675 184.448 199.552 165.325 176 165.325Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "angle": PortIcon(
+      name: "angle",
+      shapes: [
+        IconShape(d: "M448 405.333L64 405.333L256 85.333", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M439.787 323.648L440.107 323.648", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M416.32 251.115L416.64 251.115", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M377.92 184.981L378.24 184.981", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M328.853 127.381L329.173 127.381", filled: false, strokeWidth: 42.667)
+      ]
+    ),
     "architect": PortIcon(
       name: "architect",
       shapes: [
@@ -78,6 +128,140 @@ public enum PortIcons {
         IconShape(d: "M320 170.667L405.333 256", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "arrowelbow": PortIcon(
+      name: "arrowelbow",
+      shapes: [
+        IconShape(d: "M85.333 405.333L213.333 405.333C236.736 405.333 256 386.069 256 362.667L256 192C256 168.597 275.264 149.333 298.667 149.333L448 149.333", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M384 85.333L448 149.333L384 213.333", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "arrowheadarrow": PortIcon(
+      name: "arrowheadarrow",
+      shapes: [
+        IconShape(d: "M89.6 268.8L422.4 268.8M294.4 192L422.4 268.8L294.4 345.6", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadbar": PortIcon(
+      name: "arrowheadbar",
+      shapes: [
+        IconShape(d: "M140.8 268.8L396.8 268.8M396.8 192L396.8 345.6", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadcardinalityexactlyone": PortIcon(
+      name: "arrowheadcardinalityexactlyone",
+      shapes: [
+        IconShape(d: "M64 268.8L422.4 268.8M320 192L320 345.6M422.4 192L422.4 345.6", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadcardinalitymany": PortIcon(
+      name: "arrowheadcardinalitymany",
+      shapes: [
+        IconShape(d: "M64 268.8L422.4 268.8M320 268.8L422.4 192M320 268.8L422.4 345.6", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadcardinalityone": PortIcon(
+      name: "arrowheadcardinalityone",
+      shapes: [
+        IconShape(d: "M64 268.8L422.4 268.8M320 192L320 345.6", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadcardinalityoneormany": PortIcon(
+      name: "arrowheadcardinalityoneormany",
+      shapes: [
+        IconShape(d: "M64 268.8L422.4 268.8M217.6 192L217.6 345.6M320 268.8L422.4 192M320 268.8L422.4 345.6", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadcardinalityzeroormany": PortIcon(
+      name: "arrowheadcardinalityzeroormany",
+      shapes: [
+        IconShape(d: "M64 268.8L166.4 268.8M268.8 268.8L422.4 268.8M320 268.8L422.4 192M320 268.8L422.4 345.6", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M268.8 268.8C268.8 240.523 245.877 217.6 217.6 217.6C189.323 217.6 166.4 240.523 166.4 268.8C166.4 297.077 189.323 320 217.6 320C245.877 320 268.8 297.077 268.8 268.8Z", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadcardinalityzeroorone": PortIcon(
+      name: "arrowheadcardinalityzeroorone",
+      shapes: [
+        IconShape(d: "M64 268.8L268.8 268.8M371.2 268.8L422.4 268.8M422.4 192L422.4 345.6", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M371.2 268.8C371.2 240.523 348.277 217.6 320 217.6C291.723 217.6 268.8 240.523 268.8 268.8C268.8 297.077 291.723 320 320 320C348.277 320 371.2 297.077 371.2 268.8Z", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadcircle": PortIcon(
+      name: "arrowheadcircle",
+      shapes: [
+        IconShape(d: "M89.6 268.8L320 268.8", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M89.6 268.8L320 268.8", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M320 268.8C320 240.523 342.923 217.6 371.2 217.6C399.477 217.6 422.4 240.523 422.4 268.8C422.4 297.077 399.477 320 371.2 320C342.923 320 320 297.077 320 268.8Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M320 268.8C320 240.523 342.923 217.6 371.2 217.6C399.477 217.6 422.4 240.523 422.4 268.8C422.4 297.077 399.477 320 371.2 320C342.923 320 320 297.077 320 268.8Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "arrowheadcircleoutline": PortIcon(
+      name: "arrowheadcircleoutline",
+      shapes: [
+        IconShape(d: "M89.6 268.8L320 268.8", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M320 268.8C320 240.523 342.923 217.6 371.2 217.6C399.477 217.6 422.4 240.523 422.4 268.8C422.4 297.077 399.477 320 371.2 320C342.923 320 320 297.077 320 268.8Z", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheaddiamond": PortIcon(
+      name: "arrowheaddiamond",
+      shapes: [
+        IconShape(d: "M89.6 268.8L268.8 268.8", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M89.6 268.8L268.8 268.8", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M268.8 268.8L358.4 192L448 268.8L358.4 345.6Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M268.8 268.8L358.4 192L448 268.8L358.4 345.6Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "arrowheaddiamondoutline": PortIcon(
+      name: "arrowheaddiamondoutline",
+      shapes: [
+        IconShape(d: "M89.6 268.8L268.8 268.8", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M268.8 268.8L358.4 192L448 268.8L358.4 345.6Z", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadnone": PortIcon(
+      name: "arrowheadnone",
+      shapes: [
+        IconShape(d: "M89.6 268.8L243.2 268.8", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M320 204.8L422.4 332.8M422.4 204.8L320 332.8", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowheadtriangle": PortIcon(
+      name: "arrowheadtriangle",
+      shapes: [
+        IconShape(d: "M89.6 268.8L294.4 268.8", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M89.6 268.8L294.4 268.8", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M294.4 192L448 268.8L294.4 345.6Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M294.4 192L448 268.8L294.4 345.6Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "arrowheadtriangleoutline": PortIcon(
+      name: "arrowheadtriangleoutline",
+      shapes: [
+        IconShape(d: "M89.6 268.8L294.4 268.8", filled: false, strokeWidth: 25.6),
+        IconShape(d: "M294.4 192L448 268.8L294.4 345.6Z", filled: false, strokeWidth: 25.6)
+      ]
+    ),
+    "arrowright": PortIcon(
+      name: "arrowright",
+      shapes: [
+        IconShape(d: "M106.65 256L405.317 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M320 341.332L405.332 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M320 170.666L405.332 256", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "arrowround": PortIcon(
+      name: "arrowround",
+      shapes: [
+        IconShape(d: "M341.333 256L426.667 192L341.333 128", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M128 426.667C128 297.067 233.067 192 362.667 192L426.667 192", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "arrowsharp": PortIcon(
+      name: "arrowsharp",
+      shapes: [
+        IconShape(d: "M128 384L384 128", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M384 213.333L384 128L298.667 128", filled: false, strokeWidth: 42.667)
+      ]
+    ),
     "artist": PortIcon(
       name: "artist",
       shapes: [
@@ -89,6 +273,45 @@ public enum PortIcons {
       shapes: [
         IconShape(d: "M64 202.667C64 279.25 126.083 341.333 202.667 341.333C279.25 341.333 341.333 279.25 341.333 202.667C341.333 126.083 279.25 64 202.667 64C126.083 64 64 126.083 64 202.667", filled: false, strokeWidth: 32.0),
         IconShape(d: "M213.333 256C213.333 232.436 232.436 213.333 256 213.333L405.333 213.333C428.897 213.333 448 232.436 448 256L448 405.333C448 428.897 428.897 448 405.333 448L256 448C232.436 448 213.333 428.897 213.333 405.333L213.333 256", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "brain": PortIcon(
+      name: "brain",
+      shapes: [
+        IconShape(d: "M330.667 277.333C289.429 277.333 256 310.763 256 352L256 373.333C256 414.571 289.429 448 330.667 448C371.904 448 405.333 414.571 405.333 373.333L405.333 334.933", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M181.333 277.333C222.571 277.333 256 310.763 256 352L256 373.333C256 414.571 222.571 448 181.333 448C140.096 448 106.667 414.571 106.667 373.333L106.667 334.933", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M373.333 341.333C414.571 341.333 448 307.904 448 266.667C448 225.429 414.571 192 373.333 192L362.667 192", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M405.333 198.4L405.333 138.667C405.333 97.429 371.904 64 330.667 64C289.429 64 256 97.429 256 138.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M138.667 341.333C97.429 341.333 64 307.904 64 266.667C64 225.429 97.429 192 138.667 192L149.333 192", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M106.667 198.4L106.667 138.667C106.667 97.429 140.096 64 181.333 64C222.571 64 256 97.429 256 138.667L256 352", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "brainiconthin": PortIcon(
+      name: "brainiconthin",
+      shapes: [
+        IconShape(d: "M330.667 277.333C289.429 277.333 256 310.763 256 352L256 373.333C256 414.571 289.429 448 330.667 448C371.904 448 405.333 414.571 405.333 373.333L405.333 334.933", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M181.333 277.333C222.571 277.333 256 310.763 256 352L256 373.333C256 414.571 222.571 448 181.333 448C140.096 448 106.667 414.571 106.667 373.333L106.667 334.933", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M373.333 341.333C414.571 341.333 448 307.904 448 266.667C448 225.429 414.571 192 373.333 192L362.667 192", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M405.333 198.4L405.333 138.667C405.333 97.429 371.904 64 330.667 64C289.429 64 256 97.429 256 138.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M138.667 341.333C97.429 341.333 64 307.904 64 266.667C64 225.429 97.429 192 138.667 192L149.333 192", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M106.667 198.4L106.667 138.667C106.667 97.429 140.096 64 181.333 64C222.571 64 256 97.429 256 138.667L256 352", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "bringforward": PortIcon(
+      name: "bringforward",
+      shapes: [
+        IconShape(d: "M256 106.667L256 405.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M341.333 192L256 106.667", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.667 192L256 106.667", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "bringtofront": PortIcon(
+      name: "bringtofront",
+      shapes: [
+        IconShape(d: "M256 213.333L256 426.667", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 213.333L341.333 298.667", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 213.333L170.667 298.667", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 85.333L426.667 85.333", filled: false, strokeWidth: 32.0)
       ]
     ),
     "bucketfill": PortIcon(
@@ -105,6 +328,24 @@ public enum PortIcons {
         IconShape(d: "M64 305.562C108.467 283.059 284.851 168.704 330.752 170.701C376.704 172.698 320.051 302.234 339.584 317.542C359.117 332.851 429.952 271.744 448 262.579M74.982 250.573C104.781 237.286 215.014 166.605 253.85 170.854C292.736 175.078 279.45 268.826 308.147 276.045C336.87 283.238 406.426 224.435 426.061 214.093", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "centerhorizontally": PortIcon(
+      name: "centerhorizontally",
+      shapes: [
+        IconShape(d: "M256 469.325L256 394.675", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 298.675L256 213.325", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 117.325L256 42.675", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M122.675 336L122.675 346.675C122.675 370.227 141.773 389.325 165.325 389.325L346.675 389.325C370.227 389.325 389.325 370.227 389.325 346.675L389.325 336C389.325 312.448 370.227 293.325 346.675 293.325L165.325 293.325C141.773 293.325 122.675 312.422 122.675 336ZM165.325 165.325L165.325 176C165.325 199.552 184.448 218.675 208 218.675L304 218.675C327.552 218.675 346.675 199.552 346.675 176L346.675 165.325C346.675 141.773 327.578 122.675 304 122.675L208 122.675C184.448 122.675 165.325 141.773 165.325 165.325Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "centervertically": PortIcon(
+      name: "centervertically",
+      shapes: [
+        IconShape(d: "M42.675 256L117.325 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M213.325 256L298.675 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M394.675 256L469.325 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M176 122.675L165.325 122.675C141.773 122.675 122.675 141.773 122.675 165.325L122.675 346.675C122.675 370.227 141.773 389.325 165.325 389.325L176 389.325C199.552 389.325 218.675 370.227 218.675 346.675L218.675 165.325C218.675 141.773 199.552 122.675 176 122.675ZM346.675 165.325L336 165.325C312.448 165.325 293.325 184.448 293.325 208L293.325 304C293.325 327.552 312.422 346.675 336 346.675L346.675 346.675C370.227 346.675 389.325 327.578 389.325 304L389.325 208C389.325 184.448 370.227 165.325 346.675 165.325Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "check": PortIcon(
       name: "check",
       shapes: [
@@ -117,10 +358,47 @@ public enum PortIcons {
         IconShape(d: "M128 192L256 320L384 192", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "chevronleft": PortIcon(
+      name: "chevronleft",
+      shapes: [
+        IconShape(d: "M234.667 149.333L128 256L234.667 362.667", filled: false, strokeWidth: 21.333),
+        IconShape(d: "M362.667 149.333L256 256L362.667 362.667", filled: false, strokeWidth: 21.333)
+      ]
+    ),
+    "chevronright": PortIcon(
+      name: "chevronright",
+      shapes: [
+        IconShape(d: "M192 128L320 256L192 384", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "chevronup": PortIcon(
+      name: "chevronup",
+      shapes: [
+        IconShape(d: "M128 320L256 192L384 320", filled: false, strokeWidth: 42.667)
+      ]
+    ),
     "clear": PortIcon(
       name: "clear",
       shapes: [
         IconShape(d: "M85.325 149.325L426.675 149.325M213.325 234.675L213.325 362.675M298.675 234.675L298.675 362.675M106.675 149.325L128 405.325C128 428.877 147.098 448 170.675 448L341.325 448C364.877 448 384 428.902 384 405.325L405.325 149.325M192 149.325L192 85.325C192 73.549 201.549 64 213.325 64L298.675 64C310.451 64 320 73.549 320 85.325L320 149.325", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "clipboard": PortIcon(
+      name: "clipboard",
+      shapes: [
+        IconShape(d: "M448 112L448 464C448 490.51 426.51 512 400 512L112 512C85.49 512 64 490.51 64 464L64 112C64 85.49 85.49 64 112 64L192 64C192 28.71 220.71 0 256 0C291.29 0 320 28.71 320 64L400 64C426.51 64 448 85.49 448 112ZM256 40C242.745 40 232 50.745 232 64C232 77.255 242.745 88 256 88C269.255 88 280 77.255 280 64C280 50.745 269.255 40 256 40M352 154L352 134C352 130.686 349.314 128 346 128L166 128C162.686 128 160 130.686 160 134L160 154C160 157.314 162.686 160 166 160L346 160C349.314 160 352 157.314 352 154Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "clone": PortIcon(
+      name: "clone",
+      shapes: [
+        IconShape(d: "M464 0C490.51 0 512 21.49 512 48L512 336C512 362.51 490.51 384 464 384L176 384C149.49 384 128 362.51 128 336L128 48C128 21.49 149.49 0 176 0L464 0M176 416C131.888 416 96 380.112 96 336L96 128L48 128C21.49 128 0 149.49 0 176L0 464C0 490.51 21.49 512 48 512L336 512C362.51 512 384 490.51 384 464L384 416L176 416Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "collapsedown": PortIcon(
+      name: "collapsedown",
+      shapes: [
+        IconShape(d: "M128 192L256 320L384 192", filled: false, strokeWidth: 42.667)
       ]
     ),
     "commandPalette": PortIcon(
@@ -129,16 +407,72 @@ public enum PortIcons {
         IconShape(d: "M277.333 64L277.333 213.333L405.333 213.333L234.667 448L234.667 298.667L106.667 298.667L277.333 64", filled: false, strokeWidth: 26.667)
       ]
     ),
+    "copy": PortIcon(
+      name: "copy",
+      shapes: [
+        IconShape(d: "M170.667 170.667M170.667 213.333C170.667 189.769 189.769 170.667 213.333 170.667L384 170.667C407.564 170.667 426.667 189.769 426.667 213.333L426.667 384C426.667 407.564 407.564 426.667 384 426.667L213.333 426.667C189.769 426.667 170.667 407.564 170.667 384Z", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M341.333 170.667L341.333 128C341.333 104.436 322.231 85.333 298.667 85.333L128 85.333C104.436 85.333 85.333 104.436 85.333 128L85.333 298.667C85.333 322.231 104.436 341.333 128 341.333L170.667 341.333", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "crop": PortIcon(
+      name: "crop",
+      shapes: [
+        IconShape(d: "M170.667 106.667L170.667 320C170.667 331.782 180.218 341.333 192 341.333L405.333 341.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M106.667 170.667L320 170.667C331.782 170.667 341.333 180.218 341.333 192L341.333 405.333", filled: false, strokeWidth: 26.667)
+      ]
+    ),
     "cross": PortIcon(
       name: "cross",
       shapes: [
         IconShape(d: "M384 128L128 384M128 128L384 384", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "cut": PortIcon(
+      name: "cut",
+      shapes: [
+        IconShape(d: "M149.333 362.667M85.333 362.667C85.333 398.013 113.987 426.667 149.333 426.667C184.68 426.667 213.333 398.013 213.333 362.667C213.333 327.32 184.68 298.667 149.333 298.667C113.987 298.667 85.333 327.32 85.333 362.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M362.667 362.667M298.667 362.667C298.667 398.013 327.32 426.667 362.667 426.667C398.013 426.667 426.667 398.013 426.667 362.667C426.667 327.32 398.013 298.667 362.667 298.667C327.32 298.667 298.667 327.32 298.667 362.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M195.2 316.8L384 85.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M128 85.333L316.8 316.8", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "devicedesktop": PortIcon(
+      name: "devicedesktop",
+      shapes: [
+        IconShape(d: "M64 106.667C64 94.885 73.551 85.333 85.333 85.333L426.667 85.333C438.449 85.333 448 94.885 448 106.667L448 320C448 331.782 438.449 341.333 426.667 341.333L85.333 341.333C73.551 341.333 64 331.782 64 320L64 106.667ZM149.333 426.667L362.667 426.667M192 341.333L192 426.667M320 341.333L320 426.667", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "diamond": PortIcon(
       name: "diamond",
       shapes: [
         IconShape(d: "M224 435.2L76.8 288C60.139 271.339 60.139 240.661 76.8 224L224 76.8C240.661 60.139 271.339 60.139 288 76.8L435.2 224C451.861 240.661 451.861 271.339 435.2 288L288 435.2C271.339 451.861 240.661 451.861 224 435.2Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "discord": PortIcon(
+      name: "discord",
+      shapes: [
+        IconShape(d: "M192 277.325C203.777 277.325 213.325 267.777 213.325 256C213.325 244.223 203.777 234.675 192 234.675C180.223 234.675 170.675 244.223 170.675 256C170.675 267.777 180.223 277.325 192 277.325ZM320 277.325C331.777 277.325 341.325 267.777 341.325 256C341.325 244.223 331.777 234.675 320 234.675C308.223 234.675 298.675 244.223 298.675 256C298.675 267.777 308.223 277.325 320 277.325ZM160 160C234.675 138.675 277.325 138.675 352 160M149.325 352C224 373.325 288 373.325 362.675 352", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M330.675 362.675C330.675 384 362.675 426.675 373.325 426.675C405.325 426.675 433.766 391.091 448 362.675C462.234 327.091 458.675 238.234 416 117.325C384.922 95.667 352 88.755 320 85.325L298.675 138.675M181.325 362.675C181.325 384 152.397 426.675 142.259 426.675C111.77 426.675 84.685 391.091 71.142 362.675C57.6 327.091 60.979 238.234 101.606 117.325C131.226 95.667 160.947 88.755 192 85.325L213.325 138.675", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "distributehorizontally": PortIcon(
+      name: "distributehorizontally",
+      shapes: [
+        IconShape(d: "M426.675 85.325L426.675 426.675M85.325 85.325L85.325 426.675", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M368 261.325L368 250.675C368 227.123 348.902 208 325.325 208L186.675 208C163.123 208 144 227.098 144 250.675L144 261.325C144 284.877 163.098 304 186.675 304L325.325 304C348.877 304 368 284.902 368 261.325Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "distributevertically": PortIcon(
+      name: "distributevertically",
+      shapes: [
+        IconShape(d: "M85.325 85.325L426.675 85.325M85.325 426.675L426.675 426.675", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M261.325 144L250.675 144C227.123 144 208 163.098 208 186.675L208 325.325C208 348.877 227.098 368 250.675 368L261.325 368C284.877 368 304 348.902 304 325.325L304 186.675C304 163.123 284.902 144 261.325 144Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "done": PortIcon(
+      name: "done",
+      shapes: [
+        IconShape(d: "M173.898 439.404L7.498 273.004C-2.499 263.007 -2.499 246.798 7.498 236.8L43.701 200.596C53.698 190.598 69.908 190.598 79.905 200.596L192 312.69L432.095 72.596C442.092 62.599 458.302 62.599 468.299 72.596L504.502 108.8C514.499 118.797 514.499 135.006 504.502 145.004L210.102 439.405C200.104 449.402 183.895 449.402 173.898 439.404Z", filled: true, strokeWidth: 0.0)
       ]
     ),
     "dots": PortIcon(
@@ -149,11 +483,74 @@ public enum PortIcons {
         IconShape(d: "M234.667 106.667C234.667 94.885 244.218 85.333 256 85.333C267.782 85.333 277.333 94.885 277.333 106.667C277.333 118.449 267.782 128 256 128C244.218 128 234.667 118.449 234.667 106.667Z", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "dotshorizontal": PortIcon(
+      name: "dotshorizontal",
+      shapes: [
+        IconShape(d: "M106.667 256M85.333 256C85.333 267.782 94.885 277.333 106.667 277.333C118.449 277.333 128 267.782 128 256C128 244.218 118.449 234.667 106.667 234.667C94.885 234.667 85.333 244.218 85.333 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 256M234.667 256C234.667 267.782 244.218 277.333 256 277.333C267.782 277.333 277.333 267.782 277.333 256C277.333 244.218 267.782 234.667 256 234.667C244.218 234.667 234.667 244.218 234.667 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M405.333 256M384 256C384 267.782 393.551 277.333 405.333 277.333C417.115 277.333 426.667 267.782 426.667 256C426.667 244.218 417.115 234.667 405.333 234.667C393.551 234.667 384 244.218 384 256", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "download": PortIcon(
+      name: "download",
+      shapes: [
+        IconShape(d: "M85.333 362.667L85.333 405.333C85.333 428.897 104.436 448 128 448L384 448C407.564 448 426.667 428.897 426.667 405.333L426.667 362.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M149.333 234.667L256 341.333L362.667 234.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 85.333L256 341.333", filled: false, strokeWidth: 42.667)
+      ]
+    ),
     "duplicate": PortIcon(
       name: "duplicate",
       shapes: [
         IconShape(d: "M368 165.325L229.325 165.325C193.979 165.325 165.325 193.979 165.325 229.325L165.325 368C165.325 403.346 193.979 432 229.325 432L368 432C403.346 432 432 403.346 432 368L432 229.325C432 193.979 403.346 165.325 368 165.325Z", filled: false, strokeWidth: 32.0),
         IconShape(d: "M298.675 80C311.91 80 323.917 85.376 332.595 94.08C341.299 102.733 346.675 114.739 346.675 128L346.675 165.325L213.325 165.325C200.909 165.325 189.594 170.061 181.069 177.792C172.288 185.779 166.477 196.992 165.478 209.536L165.35 346.675L128 346.675C115.262 346.685 103.046 341.618 94.054 332.595C85.048 323.606 79.99 311.4 80 298.675L80 128C80 114.739 85.376 102.733 94.08 94.054C102.733 85.35 114.739 80 128 80L298.675 80Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "edgeround": PortIcon(
+      name: "edgeround",
+      shapes: [
+        IconShape(d: "M85.333 256L85.333 170.667C85.333 123.538 123.538 85.333 170.667 85.333L256 85.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M341.333 85.333L341.333 85.547", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M426.667 85.333L426.667 85.547", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M426.667 170.667L426.667 170.88", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M426.667 256L426.667 256.213", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 341.333L85.333 341.547", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M426.667 341.333L426.667 341.547", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 426.667L85.333 426.88", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.667 426.667L170.667 426.88", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 426.667L256 426.88", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M341.333 426.667L341.333 426.88", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M426.667 426.667L426.667 426.88", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "edgesharp": PortIcon(
+      name: "edgesharp",
+      shapes: [
+        IconShape(d: "M85.334 255.999L85.334 170.666C85.334 154.707 85.351 126.29 85.386 85.413C126.78 85.36 155.207 85.333 170.667 85.333L256 85.333", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M341.332 85.333L341.332 85.589", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M426.668 85.333L426.668 85.589", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M426.668 170.667L426.668 170.923", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M426.668 256L426.668 256.256", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M85.334 341.332L85.334 341.588", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M426.668 341.332L426.668 341.588", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M85.334 426.668L85.334 426.924", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M170.666 426.668L170.666 426.924", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M256 426.668L256 426.924", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M341.332 426.668L341.332 426.924", filled: false, strokeWidth: 38.4),
+        IconShape(d: "M426.668 426.668L426.668 426.924", filled: false, strokeWidth: 38.4)
+      ]
+    ),
+    "elementlink": PortIcon(
+      name: "elementlink",
+      shapes: [
+        IconShape(d: "M106.667 106.667M64 106.667C64 130.231 83.103 149.333 106.667 149.333C130.231 149.333 149.333 130.231 149.333 106.667C149.333 83.103 130.231 64 106.667 64C83.103 64 64 83.103 64 106.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M405.333 106.667M362.667 106.667C362.667 130.231 381.769 149.333 405.333 149.333C428.897 149.333 448 130.231 448 106.667C448 83.103 428.897 64 405.333 64C381.769 64 362.667 83.103 362.667 106.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M106.667 405.333M64 405.333C64 428.897 83.103 448 106.667 448C130.231 448 149.333 428.897 149.333 405.333C149.333 381.769 130.231 362.667 106.667 362.667C83.103 362.667 64 381.769 64 405.333", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M405.333 405.333M362.667 405.333C362.667 428.897 381.769 448 405.333 448C428.897 448 448 428.897 448 405.333C448 381.769 428.897 362.667 405.333 362.667C381.769 362.667 362.667 381.769 362.667 405.333", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M106.667 149.333L106.667 362.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M149.333 106.667L362.667 106.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M149.333 405.333L362.667 405.333", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M405.333 149.333L405.333 362.667", filled: false, strokeWidth: 42.667)
       ]
     ),
     "ellipse": PortIcon(
@@ -176,6 +573,18 @@ public enum PortIcons {
         IconShape(d: "M384 283.733L249.6 149.333", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "excallogo": PortIcon(
+      name: "excallogo",
+      shapes: [
+        IconShape(d: "M510.72 420.979C509.702 420.206 508.386 419.942 507.149 420.262C480.346 380.8 446.042 343.462 413.158 307.2L407.795 301.158C407.781 300.498 407.526 299.865 407.078 299.379C406.453 298.786 405.73 298.306 404.941 297.958L403.866 296.896L403.149 296.179C402.074 294.042 399.565 292.621 397.069 294.042C387.059 299.034 377.779 306.496 368.832 313.6C357.056 322.842 345.254 332.096 334.17 342.4C329.638 346.426 325.454 350.828 321.664 355.558C319.872 358.042 321.306 360.179 323.456 361.242C315.584 369.062 307.712 376.896 299.866 385.062C299.147 385.836 298.761 386.861 298.79 387.917C298.79 388.979 299.507 390.042 300.211 390.4L314.163 401.062L314.163 401.421C333.811 420.979 368.486 447.642 405.299 476.442C410.65 480.717 416.371 484.979 421.734 489.242C424.23 492.096 426.726 495.296 428.877 498.138C429.952 499.546 432.461 499.917 433.882 498.842C434.598 499.558 435.674 500.262 436.39 500.979C437.04 501.375 437.771 501.62 438.528 501.696C439.666 501.756 440.753 501.217 441.395 500.275C441.788 499.625 442.029 498.894 442.099 498.138C442.47 498.138 442.458 498.496 442.816 498.496C443.875 498.524 444.904 498.139 445.683 497.421L510.733 426.662C511.502 425.917 511.937 424.892 511.937 423.821C511.937 422.75 511.502 421.724 510.733 420.979ZM323.456 396.442C323.815 397.122 324.296 397.729 324.877 398.234C332.378 404.634 340.237 411.034 348.467 418.138L315.584 393.242L312.371 391.117C311.654 390.758 310.938 390.042 310.221 389.696L307.725 387.558L308.442 386.842L309.146 386.138L310.579 384.717C321.664 373.696 340.608 355.2 350.259 345.958C339.891 356.262 319.155 386.496 323.443 396.442ZM435.674 484.634L408.512 464C397.749 452.884 386.54 442.208 374.912 432C389.568 443.021 402.074 452.621 403.866 454.4C418.163 466.842 417.434 464.717 427.098 472.896L438.886 481.421C438.003 482.66 436.916 483.742 435.674 484.621ZM442.816 489.958L442.099 489.6C443.174 488.896 444.25 488.179 445.325 487.117L442.816 489.958ZM13.939 73.6C14.643 78.221 15.731 82.842 16.435 87.117C20.723 110.579 25.011 131.917 32.87 147.917L36.096 160C37.171 164.621 38.95 170.317 40.742 171.738C58.97 187.738 86.848 211.546 116.864 234.317C118.229 235.382 120.145 235.382 121.51 234.317C121.51 234.317 121.51 234.662 121.869 234.662C122.507 235.371 123.424 235.765 124.378 235.738C125.432 235.763 126.456 235.377 127.232 234.662C165.478 192.358 194.061 157.517 214.438 128.358C215.872 126.938 216.23 124.8 216.23 123.021C217.651 121.6 218.726 119.821 220.16 118.758C221.581 117.338 221.581 114.842 220.16 113.766L219.802 113.421C219.802 112.717 219.443 111.642 218.726 111.283C209.792 102.758 203.366 96.717 196.57 90.317C184.768 79.283 172.621 67.917 146.893 42.317L146.534 41.958C146.176 41.6 145.818 41.242 145.101 41.242C137.958 38.758 123.302 36.262 105.075 33.062C77.914 28.454 41.088 22.054 7.859 12.083C7.859 12.083 5.709 12.083 5.35 12.442L4.288 13.517C3.93 13.862 3.571 14.221 1.421 14.925L2.138 14.925L1.421 14.925C1.779 17.062 1.779 18.483 2.496 20.979C2.496 21.683 3.93 27.379 3.93 28.083L13.939 73.6ZM212.288 115.558L208 111.283C209.075 112.717 210.509 113.779 212.288 115.558ZM166.899 175.283L166.182 176C166.182 175.642 166.541 175.283 166.899 175.283ZM140.813 47.283C142.963 49.421 151.898 57.958 154.035 59.738C144.742 55.462 121.523 44.8 110.784 41.242C121.51 43.379 136.166 45.517 140.813 47.283ZM18.227 29.517C23.59 38.758 27.878 70.758 32.166 102.042C29.658 92.083 27.878 82.138 25.728 72.883C22.515 56.538 19.29 41.958 15.002 29.158C15.718 29.158 16.794 29.158 18.227 29.517ZM16.077 22.042C14.643 22.042 13.222 21.683 12.147 21.683C12.147 21.338 12.147 20.979 11.789 20.979C13.581 20.979 14.643 21.338 16.077 22.042ZM2.138 24.883C2.138 24.538 2.138 24.538 2.138 24.883ZM504.998 17.062C505.357 15.654 497.856 9.254 500.352 8.883C505.728 8.538 505.728 0.358 500.352 0.358C493.21 0.717 485.709 2.483 478.912 3.558C466.406 6.042 453.542 8.538 441.024 11.366C412.8 17.421 384.922 23.821 357.043 31.296C348.467 33.779 338.816 35.558 330.598 39.821C327.731 41.242 328.09 44.083 329.523 45.862C328.806 46.221 328.448 46.221 327.731 46.579C325.235 46.938 323.085 47.296 320.589 47.642C318.438 48 317.363 49.779 317.722 51.917C317.722 52.262 318.08 52.979 318.08 53.325C303.066 73.242 286.272 94.221 268.045 116.621C250.176 137.242 231.232 158.938 212.288 181.338C151.885 251.738 83.622 331.738 8.218 402.138C7.534 402.785 7.147 403.686 7.147 404.627C7.147 405.569 7.534 406.469 8.218 407.117C8.576 407.462 8.934 407.821 9.293 407.821C8.218 408.896 7.142 409.613 6.067 410.662C5.35 411.379 4.992 412.083 4.992 412.8C4.433 413.32 3.955 413.919 3.571 414.579C2.138 416 2.138 418.483 3.93 419.558C5.35 420.966 7.859 420.966 8.922 419.2C9.293 418.842 9.293 418.483 9.638 418.483C11.827 416.345 15.322 416.345 17.51 418.483C21.798 423.117 26.086 427.738 30.016 431.642L21.082 424.179C19.648 422.758 17.152 423.117 16.09 424.538C14.643 425.946 15.002 428.442 16.435 429.517L111.501 508.8C112.218 509.517 112.934 509.517 114.01 509.517C115.085 509.517 115.802 509.158 116.506 508.442L118.656 506.317C119.014 506.662 119.718 506.662 120.077 506.662C121.152 506.662 121.869 506.317 122.586 505.6C251.251 376.896 354.906 279.821 473.562 193.062C474.624 192.358 474.982 190.938 474.982 189.862C476.416 189.862 477.491 188.8 478.195 187.379C500.006 120.896 504.294 61.862 505.715 32.717L505.715 32.358C505.715 32 506.074 31.642 506.074 31.296C506.432 30.579 506.432 30.221 506.432 30.221C507.403 25.797 506.904 21.177 505.011 17.062ZM274.842 121.6C280.55 115.2 286.272 108.442 291.994 102.4C255.181 150.758 194.074 225.062 107.571 313.6C166.541 248.538 225.869 181.338 274.842 121.6ZM66.47 457.958L67.546 457.958L66.47 457.958ZM110.784 498.842C110.438 498.483 110.438 498.483 110.784 498.483L110.784 498.842ZM164.032 452.979C166.899 449.779 169.766 446.938 172.979 443.738C172.979 443.738 172.979 444.083 173.338 444.083C170.112 446.938 167.258 449.779 164.045 452.979ZM178.701 438.758C180.493 436.966 182.272 434.483 184.41 432.358L184.768 432C205.862 410.317 227.661 388.621 249.818 366.579L250.176 366.221C255.539 361.958 261.965 357.338 267.686 353.062C237.662 381.249 207.998 409.817 178.701 438.758ZM317.363 82.842C305.574 98.138 292.352 118.4 281.267 134.4C246.246 184.883 133.658 308.262 131.162 310.4C96.941 343.089 62.628 375.682 28.224 408.179L26.086 410.317C24.294 408.179 24.294 404.979 26.445 403.2C185.472 254.221 281.984 130.138 320.947 75.738C319.872 78.221 319.155 80.346 317.363 82.842ZM379.187 155.738C364.902 147.546 358.118 134.746 362.035 122.317L363.11 118.042C363.469 116.979 364.186 115.558 364.902 114.496C368.832 108.096 374.554 102.758 380.992 99.558C381.338 99.558 381.696 99.558 382.054 99.2C381.696 98.483 381.696 97.421 381.696 96.358C382.054 94.221 383.488 92.8 385.984 92.8C390.272 92.8 403.507 96.717 408.512 100.979C409.933 102.042 411.366 103.462 412.8 104.883C414.592 107.021 417.446 110.579 418.867 113.421C419.584 113.779 420.301 117.338 421.376 119.117C422.093 121.958 422.797 125.158 422.451 128C422.093 128.358 422.451 130.483 422.093 130.483C421.466 135.142 419.884 139.622 417.446 143.642C417.088 144 417.088 144.358 416.73 144.717L416.371 145.062C414.579 147.917 412.083 150.4 409.587 152.179C401.357 157.862 392.064 159.642 382.771 157.158C382.771 157.158 380.275 156.083 379.187 155.738ZM483.558 145.062C480.319 158.729 476.505 172.254 472.128 185.6C472.128 185.958 471.77 186.662 472.128 187.021C471.411 187.021 471.053 187.379 470.336 187.738C442.099 208.346 414.579 230.042 387.059 252.096C410.65 231.104 434.24 209.779 458.906 188.8C466.048 182.4 471.053 174.221 472.474 164.979L476.058 143.642L476.058 142.938C477.85 138.662 484.634 140.442 483.558 145.062Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "export": PortIcon(
+      name: "export",
+      shapes: [
+        IconShape(d: "M85.325 362.675L85.325 405.325C85.325 428.877 104.448 448 128 448L384 448C407.552 448 426.675 428.902 426.675 405.325L426.675 362.675M149.325 234.675L256 341.325L362.675 234.675M256 85.325L256 341.325", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "exportImage": PortIcon(
       name: "exportImage",
       shapes: [
@@ -193,10 +602,73 @@ public enum PortIcons {
         IconShape(d: "M216 0L296 0C309.3 0 320 10.7 320 24L320 192L407.7 192C425.5 192 434.4 213.5 421.8 226.1L269.7 378.3C262.2 385.8 249.9 385.8 242.4 378.3L90.1 226.1C77.5 213.5 86.4 192 104.2 192L192 192L192 24C192 10.7 202.7 0 216 0ZM512 376L512 488C512 501.3 501.3 512 488 512L24 512C10.7 512 0 501.3 0 488L0 376C0 362.7 10.7 352 24 352L170.7 352L219.7 401C239.8 421.1 272.2 421.1 292.3 401L341.3 352L488 352C501.3 352 512 362.7 512 376ZM388 464C388 453 379 444 368 444C357 444 348 453 348 464C348 475 357 484 368 484C379 484 388 475 388 464ZM452 464C452 453 443 444 432 444C421 444 412 453 412 464C412 475 421 484 432 484C443 484 452 475 452 464Z", filled: true, strokeWidth: 0.0)
       ]
     ),
+    "exporttoplus": PortIcon(
+      name: "exporttoplus",
+      shapes: [
+        IconShape(d: "M170.667 192L149.333 192C125.769 192 106.667 211.103 106.667 234.667L106.667 405.333C106.667 428.897 125.769 448 149.333 448L362.667 448C386.231 448 405.333 428.897 405.333 405.333L405.333 234.667C405.333 211.103 386.231 192 362.667 192L341.333 192", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M256 298.667L256 64", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M192 128L256 64L320 128", filled: false, strokeWidth: 26.667)
+      ]
+    ),
     "externallink": PortIcon(
       name: "externallink",
       shapes: [
         IconShape(d: "M234.675 149.325L149.325 149.325C117.222 149.325 85.325 182.144 85.325 213.325L85.325 362.675C85.325 395.52 117.376 426.675 149.325 426.675L298.675 426.675C330.701 426.675 362.675 394.675 362.675 362.675L362.675 277.325M213.325 298.675L426.675 85.325M320 85.325L426.675 85.325L426.675 192", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "eye": PortIcon(
+      name: "eye",
+      shapes: [
+        IconShape(d: "M213.333 256C213.333 279.564 232.436 298.667 256 298.667C279.564 298.667 298.667 279.564 298.667 256C298.667 232.436 279.564 213.333 256 213.333C232.436 213.333 213.333 232.436 213.333 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M448 256C396.8 341.333 332.8 384 256 384C179.2 384 115.2 341.333 64 256C115.2 170.667 179.2 128 256 128C332.8 128 396.8 170.667 448 256", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "eyeclosed": PortIcon(
+      name: "eyeclosed",
+      shapes: [
+        IconShape(d: "M225.813 225.856C209.153 242.522 209.158 269.537 225.824 286.197C242.49 302.857 269.505 302.852 286.165 286.187", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M355.861 355.691C325.936 374.414 291.299 384.233 256 384C179.2 384 115.2 341.333 64 256C91.136 210.773 121.856 177.536 156.16 156.288M217.173 131.84C229.953 129.253 242.961 127.966 256 128C332.8 128 396.8 170.667 448 256C433.792 279.68 418.581 300.096 402.389 317.227", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M64 64L448 448", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "eyedropper": PortIcon(
+      name: "eyedropper",
+      shapes: [
+        IconShape(d: "M85.333 341.333L334.933 91.733C343.229 83.602 356.505 83.602 364.8 91.733L420.267 147.2C428.398 155.495 428.398 168.771 420.267 177.067L170.667 426.667L85.333 426.667L85.333 341.333Z", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M234.667 149.333L362.667 277.333", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "file": PortIcon(
+      name: "file",
+      shapes: [
+        IconShape(d: "M433.9 97.9L350 14C341 5 328.8 -0.1 316.1 -0.1L112 -0.1C85.5 0 64 21.5 64 48L64 464C64 490.5 85.5 512 112 512L400 512C426.5 512 448 490.5 448 464L448 131.9C448 119.2 442.9 106.9 433.9 97.9ZM396.1 128L320 128L320 51.9L396.1 128ZM112 464L112 48L272 48L272 152C272 165.3 282.7 176 296 176L400 176L400 464L112 464ZM144 416L368 416L368 288L344.5 264.5C339.8 259.8 332.2 259.8 327.5 264.5L240 352L200.5 312.5C195.8 307.8 188.2 307.8 183.5 312.5L144 352L144 416ZM192 176C165.5 176 144 197.5 144 224C144 250.5 165.5 272 192 272C218.5 272 240 250.5 240 224C240 197.5 218.5 176 192 176Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "fillcrosshatch": PortIcon(
+      name: "fillcrosshatch",
+      shapes: [
+        IconShape(d: "M150.502 67.2L361.498 67.2C407.504 67.2 444.8 104.496 444.8 150.502L444.8 361.498C444.8 407.504 407.504 444.8 361.498 444.8L150.528 444.8C104.521 444.8 67.226 407.504 67.226 361.498L67.226 150.528C67.226 104.521 104.521 67.226 150.528 67.226Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M62.106 385.126L385.126 62.106M189.005 512L512 189.005M0 322.995L322.995 0M118.707 459.29L441.754 136.294M385.152 449.894L62.106 126.874M512 322.995L189.005 0M322.995 512L0 189.005M459.29 393.293L136.294 70.272", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fillhachure": PortIcon(
+      name: "fillhachure",
+      shapes: [
+        IconShape(d: "M150.502 67.2L361.498 67.2C407.504 67.2 444.8 104.496 444.8 150.502L444.8 361.498C444.8 407.504 407.504 444.8 361.498 444.8L150.528 444.8C104.521 444.8 67.226 407.504 67.226 361.498L67.226 150.528C67.226 104.521 104.521 67.226 150.528 67.226Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M57.805 387.994L387.994 57.805M187.494 517.683L517.683 187.52M-5.683 324.48L324.48 -5.683M115.661 463.821L445.85 133.632", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fillsolid": PortIcon(
+      name: "fillsolid",
+      shapes: [
+        IconShape(d: "M125.696 67.2L386.304 67.2C401.816 67.193 416.695 73.35 427.665 84.317C438.636 95.283 444.8 110.159 444.8 125.67L444.8 386.33C444.8 418.622 418.622 444.8 386.33 444.8L125.67 444.8C93.378 444.8 67.2 418.622 67.2 386.33L67.2 125.67C67.2 93.378 93.378 67.2 125.67 67.2Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M125.696 67.2L386.304 67.2C401.816 67.193 416.695 73.35 427.665 84.317C438.636 95.283 444.8 110.159 444.8 125.67L444.8 386.33C444.8 418.622 418.622 444.8 386.33 444.8L125.67 444.8C93.378 444.8 67.2 418.622 67.2 386.33L67.2 125.67C67.2 93.378 93.378 67.2 125.67 67.2Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fillzigzag": PortIcon(
+      name: "fillzigzag",
+      shapes: [
+        IconShape(d: "M150.502 67.2L361.498 67.2C407.411 67.424 444.576 104.589 444.8 150.502L444.8 361.498C444.576 407.411 407.411 444.576 361.498 444.8L150.528 444.8C104.615 444.576 67.45 407.411 67.226 361.498L67.226 150.528C67.45 104.615 104.615 67.45 150.528 67.226L150.502 67.2ZM115.661 412.621L310.426 84.173M315.494 440.883L444.8 187.52M71.117 247.68L310.426 84.173M115.661 412.621L444.8 187.52", filled: false, strokeWidth: 32.0)
       ]
     ),
     "fit": PortIcon(
@@ -209,6 +681,83 @@ public enum PortIcons {
         IconShape(d: "M64 128L64 106.667C64 83.103 83.103 64 106.667 64L128 64", filled: false, strokeWidth: 26.667),
         IconShape(d: "M213.333 64L234.667 64", filled: false, strokeWidth: 26.667),
         IconShape(d: "M320 64L341.333 64C364.897 64 384 83.103 384 106.667L384 128", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "fliphorizontal": PortIcon(
+      name: "fliphorizontal",
+      shapes: [
+        IconShape(d: "M256 64L256 448", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M341.333 149.333L341.333 362.667L448 362.667L341.333 149.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M170.667 149.333L170.667 362.667L64 362.667L170.667 149.333", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "flipvertical": PortIcon(
+      name: "flipvertical",
+      shapes: [
+        IconShape(d: "M64 256L448 256", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M149.333 341.333L362.667 341.333L149.333 448L149.333 341.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M149.333 170.667L362.667 170.667L149.333 64L149.333 170.667", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "fontfamilycode": PortIcon(
+      name: "fontfamilycode",
+      shapes: [
+        IconShape(d: "M149.333 170.667L64 256L149.333 341.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M362.667 170.667L448 256L362.667 341.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M298.667 85.333L213.333 426.667", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fontfamilyhanddrawn": PortIcon(
+      name: "fontfamilyhanddrawn",
+      shapes: [
+        IconShape(d: "M149.333 256L362.667 256", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M149.333 106.667L149.333 405.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M362.667 106.667L362.667 405.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M320 405.333L405.333 405.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M320 106.667L405.333 106.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M106.667 405.333L192 405.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M106.667 106.667L192 106.667", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "fontfamilynormal": PortIcon(
+      name: "fontfamilynormal",
+      shapes: [
+        IconShape(d: "M149.325 426.675L149.325 170.675C149.318 148.037 158.308 126.324 174.316 110.316C190.324 94.308 212.037 85.318 234.675 85.325L277.325 85.325C299.963 85.318 321.676 94.308 337.684 110.316C353.692 126.324 362.682 148.037 362.675 170.675L362.675 426.675M149.325 277.325L362.675 277.325", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fontsize": PortIcon(
+      name: "fontsize",
+      shapes: [
+        IconShape(d: "M64 149.333L64 106.667L341.333 106.667L341.333 149.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M213.333 106.667L213.333 405.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M256 405.333L170.667 405.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M320 277.333L320 256L448 256L448 277.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M384 256L384 405.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M362.667 405.333L405.333 405.333", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "fontsizeextralarge": PortIcon(
+      name: "fontsizeextralarge",
+      shapes: [
+        IconShape(d: "M42.675 85.325L213.325 426.675M213.325 85.325L42.675 426.675M298.675 85.325L298.675 426.675L469.325 426.675", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fontsizelarge": PortIcon(
+      name: "fontsizelarge",
+      shapes: [
+        IconShape(d: "M149.325 85.325L149.325 426.675L362.675 426.675", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fontsizemedium": PortIcon(
+      name: "fontsizemedium",
+      shapes: [
+        IconShape(d: "M128 426.675L128 85.325L256 384L384 85.325L384 426.675", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fontsizesmall": PortIcon(
+      name: "fontsizesmall",
+      shapes: [
+        IconShape(d: "M362.675 170.675C362.682 148.037 353.692 126.324 337.684 110.316C321.676 94.308 299.963 85.318 277.325 85.325L234.675 85.325C187.545 85.325 149.338 123.532 149.338 170.662C149.338 217.793 187.545 256 234.675 256L277.325 256C324.455 256 362.662 294.207 362.662 341.338C362.662 388.468 324.455 426.675 277.325 426.675L234.675 426.675C212.037 426.682 190.324 417.692 174.316 401.684C158.308 385.676 149.318 363.963 149.325 341.325", filled: false, strokeWidth: 32.0)
       ]
     ),
     "frame": PortIcon(
@@ -225,6 +774,15 @@ public enum PortIcons {
       shapes: [
         IconShape(d: "M195.661 401.664L394.675 202.675C418.244 179.106 418.244 140.894 394.675 117.325C371.106 93.756 332.894 93.756 309.325 117.325L110.336 316.339C94.326 332.339 85.329 354.044 85.325 376.678L85.325 426.675L135.322 426.675C157.952 426.675 179.661 417.664 195.661 401.664Z", filled: false, strokeWidth: 32.0),
         IconShape(d: "M288 138.675L373.325 224", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "fullscreen": PortIcon(
+      name: "fullscreen",
+      shapes: [
+        IconShape(d: "M85.333 170.667L85.333 128C85.333 104.436 104.436 85.333 128 85.333L170.667 85.333", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 341.333L85.333 384C85.333 407.564 104.436 426.667 128 426.667L170.667 426.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M341.333 85.333L384 85.333C407.564 85.333 426.667 104.436 426.667 128L426.667 170.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M341.333 426.667L384 426.667C407.564 426.667 426.667 407.564 426.667 384L426.667 341.333", filled: false, strokeWidth: 42.667)
       ]
     ),
     "github": PortIcon(
@@ -253,14 +811,22 @@ public enum PortIcons {
         IconShape(d: "M281.319 281.319L450.11 281.319L450.11 450.11L281.319 450.11", filled: true, strokeWidth: 0.0),
         IconShape(d: "M281.319 450.11C281.319 405.397 281.319 360.681 281.319 281.319M281.319 281.319C331.129 281.319 380.939 281.319 450.11 281.319L281.319 281.319ZM281.319 281.319C321.305 281.319 361.292 281.319 450.11 281.319L281.319 281.319ZM450.11 281.319C450.11 338.1 450.11 394.884 450.11 450.11L450.11 281.319ZM450.11 281.319C450.11 318.506 450.11 355.691 450.11 450.11L450.11 281.319ZM450.11 450.11C409.414 450.11 368.719 450.11 281.319 450.11L450.11 450.11ZM450.11 450.11C403.599 450.11 357.089 450.11 281.319 450.11L450.11 450.11ZM281.319 450.11C281.319 404.145 281.319 358.178 281.319 281.319L281.319 450.11Z", filled: true, strokeWidth: 0.0),
         IconShape(d: "M281.319 450.11C281.319 405.397 281.319 360.681 281.319 281.319M281.319 281.319C331.129 281.319 380.939 281.319 450.11 281.319L281.319 281.319ZM281.319 281.319C321.305 281.319 361.292 281.319 450.11 281.319L281.319 281.319ZM450.11 281.319C450.11 338.1 450.11 394.884 450.11 450.11L450.11 281.319ZM450.11 281.319C450.11 318.506 450.11 355.691 450.11 450.11L450.11 281.319ZM450.11 450.11C409.414 450.11 368.719 450.11 281.319 450.11L450.11 450.11ZM450.11 450.11C403.599 450.11 357.089 450.11 281.319 450.11L450.11 450.11ZM281.319 450.11C281.319 404.145 281.319 358.178 281.319 281.319L281.319 450.11Z", filled: false, strokeWidth: 5.626),
-        IconShape(d: "M7.033 7.033L91.429 7.033L91.429 91.429L7.033 91.429Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M7.033 7.033L91.429 7.033L91.429 91.429L7.033 91.429Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M7.033 7.033L91.429 7.033L91.429 91.429L7.033 91.429Z", filled: false, strokeWidth: 16.879),
-        IconShape(d: "M7.033 420.571L91.429 420.571L91.429 504.967L7.033 504.967Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M7.033 420.571L91.429 420.571L91.429 504.967L7.033 504.967Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M7.033 420.571L91.429 420.571L91.429 504.967L7.033 504.967Z", filled: false, strokeWidth: 16.879),
-        IconShape(d: "M414.945 420.571L499.341 420.571L499.341 504.967L414.945 504.967Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M414.945 420.571L499.341 420.571L499.341 504.967L414.945 504.967Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M414.945 420.571L499.341 420.571L499.341 504.967L414.945 504.967Z", filled: false, strokeWidth: 16.879),
-        IconShape(d: "M414.945 7.033L499.341 7.033L499.341 91.429L414.945 91.429Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M414.945 7.033L499.341 7.033L499.341 91.429L414.945 91.429Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M414.945 7.033L499.341 7.033L499.341 91.429L414.945 91.429Z", filled: false, strokeWidth: 16.879)
+      ]
+    ),
+    "hamburger": PortIcon(
+      name: "hamburger",
+      shapes: [
+        IconShape(d: "M85.333 128L426.667 128", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 256L426.667 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 384L426.667 384", filled: false, strokeWidth: 32.0)
       ]
     ),
     "hand": PortIcon(
@@ -278,6 +844,37 @@ public enum PortIcons {
         IconShape(d: "M64 256C64 149.961 149.961 64 256 64C362.039 64 448 149.961 448 256C448 362.039 362.039 448 256 448C149.961 448 64 362.039 64 256Z", filled: false, strokeWidth: 32.0),
         IconShape(d: "M256 362.667L256 362.88", filled: false, strokeWidth: 32.0),
         IconShape(d: "M256 288C255.193 273.773 263.891 260.727 277.333 256C299.322 247.591 313.607 226.219 312.968 202.686C312.328 179.154 296.904 158.588 274.492 151.386C252.08 144.183 227.562 151.912 213.333 170.667", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "helpicon": PortIcon(
+      name: "helpicon",
+      shapes: [
+        IconShape(d: "M256 256M64 256C64 362.039 149.961 448 256 448C362.039 448 448 362.039 448 256C448 149.961 362.039 64 256 64C149.961 64 64 149.961 64 256", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 362.667L256 362.88", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 288C255.193 273.773 263.891 260.727 277.333 256C299.322 247.591 313.607 226.219 312.968 202.686C312.328 179.154 296.904 158.588 274.492 151.386C252.08 144.183 227.562 151.912 213.333 170.667", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "helpiconthin": PortIcon(
+      name: "helpiconthin",
+      shapes: [
+        IconShape(d: "M64 256C64 149.961 149.961 64 256 64C362.039 64 448 149.961 448 256C448 362.039 362.039 448 256 448C149.961 448 64 362.039 64 256Z", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M256 362.667L256 362.88", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M256 288C255.193 273.773 263.891 260.727 277.333 256C299.322 247.591 313.607 226.219 312.968 202.686C312.328 179.154 296.904 158.588 274.492 151.386C252.08 144.183 227.562 151.912 213.333 170.667", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "history": PortIcon(
+      name: "history",
+      shapes: [
+        IconShape(d: "M256 170.667L256 256L298.667 298.667", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M65.067 234.667C74.964 137.503 156.225 63.252 253.885 62.136C351.546 61.021 434.482 133.397 446.596 230.309C458.71 327.221 396.141 417.785 301.211 440.744C206.282 463.702 109.243 411.738 75.733 320M65.067 426.667L65.067 320L171.733 320", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "historycommand": PortIcon(
+      name: "historycommand",
+      shapes: [
+        IconShape(d: "M447.659 267.307C452.46 185.953 405.381 110.431 330.222 78.923C255.064 47.416 168.203 66.789 113.556 127.247C58.908 187.705 48.381 276.075 87.297 347.678C126.213 419.282 206.092 458.517 286.549 445.547", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 149.333L256 256L320 320", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M405.333 341.333L362.667 405.333L448 405.333L405.333 469.333", filled: false, strokeWidth: 32.0)
       ]
     ),
     "image": PortIcon(
@@ -320,6 +917,14 @@ public enum PortIcons {
         IconShape(d: "M106.675 256L405.325 256", filled: false, strokeWidth: 38.4)
       ]
     ),
+    "lineeditor": PortIcon(
+      name: "lineeditor",
+      shapes: [
+        IconShape(d: "M362.667 64M362.667 85.333C362.667 73.551 372.218 64 384 64L426.667 64C438.449 64 448 73.551 448 85.333L448 128C448 139.782 438.449 149.333 426.667 149.333L384 149.333C372.218 149.333 362.667 139.782 362.667 128Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M64 362.667M64 384C64 372.218 73.551 362.667 85.333 362.667L128 362.667C139.782 362.667 149.333 372.218 149.333 384L149.333 426.667C149.333 438.449 139.782 448 128 448L85.333 448C73.551 448 64 438.449 64 426.667Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M362.667 106.667C221.291 106.667 106.667 221.291 106.667 362.667", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "link": PortIcon(
       name: "link",
       shapes: [
@@ -341,6 +946,20 @@ public enum PortIcons {
         IconShape(d: "M170.675 213.325L170.675 138.675C170.675 97.434 208.87 64 256 64C303.13 64 341.325 97.434 341.325 138.675L341.325 213.325", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "lockediconfilled": PortIcon(
+      name: "lockediconfilled",
+      shapes: [
+        IconShape(d: "M256 42.667C314.91 42.667 362.667 90.423 362.667 149.333L362.667 213.333C398.013 213.333 426.667 241.987 426.667 277.333L426.667 405.333C426.667 440.68 398.013 469.333 362.667 469.333L149.333 469.333C113.987 469.333 85.333 440.68 85.333 405.333L85.333 277.333C85.333 241.987 113.987 213.333 149.333 213.333L149.333 149.333C149.333 90.423 197.09 42.667 256 42.667M256 298.667C233.672 298.66 215.115 315.868 213.44 338.133L213.333 341.333C213.333 364.897 232.436 384 256 384C279.564 384 298.667 364.897 298.667 341.333C298.667 317.769 279.564 298.667 256 298.667M256 85.333C220.654 85.333 192 113.987 192 149.333L192 213.333L320 213.333L320 149.333C320 113.987 291.346 85.333 256 85.333", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "login": PortIcon(
+      name: "login",
+      shapes: [
+        IconShape(d: "M320 170.667L320 128C320 104.436 300.897 85.333 277.333 85.333L128 85.333C104.436 85.333 85.333 104.436 85.333 128L85.333 384C85.333 407.564 104.436 426.667 128 426.667L277.333 426.667C300.897 426.667 320 407.564 320 384L320 341.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M448 256L170.667 256L234.667 192", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M234.667 320L170.667 256", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "magic": PortIcon(
       name: "magic",
       shapes: [
@@ -350,10 +969,89 @@ public enum PortIcons {
         IconShape(d: "M405.333 277.333C405.333 300.897 424.436 320 448 320C424.436 320 405.333 339.103 405.333 362.667C405.333 339.103 386.231 320 362.667 320C386.231 320 405.333 300.897 405.333 277.333", filled: false, strokeWidth: 42.667)
       ]
     ),
+    "magiciconthin": PortIcon(
+      name: "magiciconthin",
+      shapes: [
+        IconShape(d: "M128 448L448 128L384 64L64 384L128 448", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M320 128L384 192", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M192 64C192 87.564 211.103 106.667 234.667 106.667C211.103 106.667 192 125.769 192 149.333C192 125.769 172.897 106.667 149.333 106.667C172.897 106.667 192 87.564 192 64", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M405.333 277.333C405.333 300.897 424.436 320 448 320C424.436 320 405.333 339.103 405.333 362.667C405.333 339.103 386.231 320 362.667 320C386.231 320 405.333 300.897 405.333 277.333", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "menu": PortIcon(
+      name: "menu",
+      shapes: [
+        IconShape(d: "M16 132L432 132C440.837 132 448 124.837 448 116L448 76C448 67.163 440.837 60 432 60L16 60C7.163 60 0 67.163 0 76L0 116C0 124.837 7.163 132 16 132ZM16 292L432 292C440.837 292 448 284.837 448 276L448 236C448 227.163 440.837 220 432 220L16 220C7.163 220 0 227.163 0 236L0 276C0 284.837 7.163 292 16 292ZM16 452L432 452C440.837 452 448 444.837 448 436L448 396C448 387.163 440.837 380 432 380L16 380C7.163 380 0 387.163 0 396L0 436C0 444.837 7.163 452 16 452Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "mermaid": PortIcon(
+      name: "mermaid",
+      shapes: [
+        IconShape(d: "M407.48 111.18C335.587 108.103 269.573 152.338 245.08 220C220.587 152.338 154.573 108.103 82.68 111.18C80.285 168.229 107.577 222.632 154.74 254.82C178.908 271.419 193.35 298.951 193.27 328.27L193.27 379.13L296.9 379.13L296.9 328.27C296.816 298.953 311.255 271.42 335.42 254.82C382.596 222.644 409.892 168.233 407.48 111.18Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "messagecircle": PortIcon(
+      name: "messagecircle",
+      shapes: [
+        IconShape(d: "M64 426.667L91.733 343.467C42.155 270.144 61.312 175.531 136.533 122.155C211.755 68.8 319.787 73.173 389.227 132.395C458.667 191.637 468.053 287.403 411.179 356.416C354.304 425.429 248.725 446.336 164.267 405.333L64 426.667", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "microphone": PortIcon(
+      name: "microphone",
+      shapes: [
+        IconShape(d: "M192 42.667M192 106.667C192 71.32 220.654 42.667 256 42.667L256 42.667C291.346 42.667 320 71.32 320 106.667L320 213.333C320 248.68 291.346 277.333 256 277.333L256 277.333C220.654 277.333 192 248.68 192 213.333Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M106.667 213.333C106.667 295.808 173.525 362.667 256 362.667C338.475 362.667 405.333 295.808 405.333 213.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.667 448L341.333 448", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 362.667L256 448", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "microphonemuted": PortIcon(
+      name: "microphonemuted",
+      shapes: [
+        IconShape(d: "M64 64L448 448", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M192 106.667C192 71.32 220.654 42.667 256 42.667C291.346 42.667 320 71.32 320 106.667L320 213.333C320.001 219.651 319.066 225.935 317.227 231.979M274.56 274.645C255.165 280.522 234.133 276.866 217.86 264.789C201.586 252.712 191.994 233.641 192 213.376L192 192.043", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M106.667 213.333C106.657 268.242 136.781 318.727 185.109 344.793C233.436 370.859 292.17 368.302 338.048 338.133M380.715 295.467C396.796 271.097 405.344 242.531 405.291 213.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.667 448L341.333 448", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 362.667L256 448", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "minus": PortIcon(
       name: "minus",
       shapes: [
         IconShape(d: "M448 208L64 208C46.33 208 32 222.33 32 240L32 272C32 289.67 46.33 304 64 304L448 304C465.67 304 480 289.67 480 272L480 240C480 222.33 465.67 208 448 208Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "more": PortIcon(
+      name: "more",
+      shapes: [
+        IconShape(d: "M234.667 256C234.667 244.218 244.218 234.667 256 234.667C267.782 234.667 277.333 244.218 277.333 256C277.333 267.782 267.782 277.333 256 277.333C244.218 277.333 234.667 267.782 234.667 256Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M234.667 405.333C234.667 393.551 244.218 384 256 384C267.782 384 277.333 393.551 277.333 405.333C277.333 417.115 267.782 426.667 256 426.667C244.218 426.667 234.667 417.115 234.667 405.333Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M234.667 106.667C234.667 94.885 244.218 85.333 256 85.333C267.782 85.333 277.333 94.885 277.333 106.667C277.333 118.449 267.782 128 256 128C244.218 128 234.667 118.449 234.667 106.667Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "openai": PortIcon(
+      name: "openai",
+      shapes: [
+        IconShape(d: "M239.296 413.525C251.88 447.411 286.923 467.422 322.502 461.038C358.08 454.655 383.981 423.709 384 387.563L384 277.333L256 205.867", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M111.232 320.299C88.159 348.14 88.344 388.51 111.67 416.139C134.997 443.768 174.765 450.718 206.08 432.64L298.667 378.581L298.667 230.4", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M128 162.773C98.325 157.739 68.544 171.2 52.608 198.805C32.149 234.247 44.287 279.563 79.723 300.032L170.667 353.664L298.667 282.24", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M272.704 98.475C260.12 64.589 225.077 44.578 189.498 50.962C153.92 57.345 128.019 88.291 128 124.437L128 232.533L256 306.133", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M400.768 191.701C423.841 163.86 423.656 123.49 400.33 95.861C377.003 68.232 337.235 61.282 305.92 79.36L213.333 133.419L213.333 281.6", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M384 347.776C413.675 352.811 443.456 339.349 459.392 311.744C479.851 276.303 467.713 230.987 432.277 210.517L340.373 156.885L213.333 229.845", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "paint": PortIcon(
+      name: "paint",
+      shapes: [
+        IconShape(d: "M106.667 64M106.667 106.667C106.667 83.103 125.769 64 149.333 64L362.667 64C386.231 64 405.333 83.103 405.333 106.667L405.333 149.333C405.333 172.897 386.231 192 362.667 192L149.333 192C125.769 192 106.667 172.897 106.667 149.333Z", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M405.333 128L426.667 128C450.231 128 469.333 147.103 469.333 170.667C469.333 229.577 421.577 277.333 362.667 277.333L256 277.333L256 320", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M213.333 320M213.333 341.333C213.333 329.551 222.885 320 234.667 320L277.333 320C289.115 320 298.667 329.551 298.667 341.333L298.667 426.667C298.667 438.449 289.115 448 277.333 448L234.667 448C222.885 448 213.333 438.449 213.333 426.667Z", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "palette": PortIcon(
+      name: "palette",
+      shapes: [
+        IconShape(d: "M204.3 5C104.9 24.4 24.8 104.3 5.2 203.4C-31.8 390.4 136.9 529.8 264 510.1C305.2 503.7 325.4 455.5 306.5 418.4C283.4 373 316.4 320 367.4 320L447.1 320C482.9 320 511.9 290.4 512 254.7C511.5 97.1 368.1 -26.9 204.3 5ZM96 320C78.3 320 64 305.7 64 288C64 270.3 78.3 256 96 256C113.7 256 128 270.3 128 288C128 305.7 113.7 320 96 320ZM128 192C110.3 192 96 177.7 96 160C96 142.3 110.3 128 128 128C145.7 128 160 142.3 160 160C160 177.7 145.7 192 128 192ZM256 128C238.3 128 224 113.7 224 96C224 78.3 238.3 64 256 64C273.7 64 288 78.3 288 96C288 113.7 273.7 128 256 128ZM384 192C366.3 192 352 177.7 352 160C352 142.3 366.3 128 384 128C401.7 128 416 142.3 416 160C416 177.7 401.7 192 384 192Z", filled: true, strokeWidth: 0.0)
       ]
     ),
     "pencil": PortIcon(
@@ -371,11 +1069,63 @@ public enum PortIcons {
         IconShape(d: "M384 405.333L106.667 405.333C83.103 405.333 64 386.231 64 362.667C64 339.103 83.103 320 106.667 320L192 320C215.564 320 234.667 300.897 234.667 277.333C234.667 253.769 215.564 234.667 192 234.667L128 234.667", filled: false, strokeWidth: 26.667)
       ]
     ),
+    "pin": PortIcon(
+      name: "pin",
+      shapes: [
+        IconShape(d: "M192 85.333L192 213.333L149.333 298.667L149.333 341.333L362.667 341.333L362.667 298.667L320 213.333L320 85.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 341.333L256 448", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.667 85.333L341.333 85.333", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "playerplay": PortIcon(
+      name: "playerplay",
+      shapes: [
+        IconShape(d: "M149.333 85.333L149.333 426.667L426.667 256Z", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "playerstopfilled": PortIcon(
+      name: "playerstopfilled",
+      shapes: [
+        IconShape(d: "M362.667 85.333L149.333 85.333C113.987 85.333 85.333 113.987 85.333 149.333L85.333 362.667C85.333 398.013 113.987 426.667 149.333 426.667L362.667 426.667C398.013 426.667 426.667 398.013 426.667 362.667L426.667 149.333C426.667 113.987 398.013 85.333 362.667 85.333Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
     "plus": PortIcon(
       name: "plus",
       shapes: [
         IconShape(d: "M256 106.667L256 405.333", filled: false, strokeWidth: 32.0),
         IconShape(d: "M106.667 256L405.333 256", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "pluspromo": PortIcon(
+      name: "pluspromo",
+      shapes: [
+        IconShape(d: "M85.333 170.667L426.667 170.667C438.449 170.667 448 180.218 448 192L448 234.667C448 246.449 438.449 256 426.667 256L85.333 256C73.551 256 64 246.449 64 234.667L64 192C64 180.218 73.551 170.667 85.333 170.667Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 170.667L256 448", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M405.333 256L405.333 405.333C405.333 428.897 386.231 448 362.667 448L149.333 448C125.769 448 106.667 428.897 106.667 405.333L106.667 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M160 170.667C130.545 170.667 106.667 146.789 106.667 117.333C106.667 87.878 130.545 64 160 64C202.117 63.266 240.208 105.589 256 170.667C271.792 105.589 309.883 63.266 352 64C381.455 64 405.333 87.878 405.333 117.333C405.333 146.789 381.455 170.667 352 170.667", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "png": PortIcon(
+      name: "png",
+      shapes: [
+        IconShape(d: "M298.667 64L298.667 149.333C298.667 161.115 308.218 170.667 320 170.667L405.333 170.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M106.667 256L106.667 106.667C106.667 83.103 125.769 64 149.333 64L298.667 64L405.333 170.667L405.333 256", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M426.667 320L405.333 320C381.769 320 362.667 339.103 362.667 362.667L362.667 405.333C362.667 428.897 381.769 448 405.333 448L426.667 448L426.667 384", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M106.667 384L138.667 384C156.34 384 170.667 369.673 170.667 352C170.667 334.327 156.34 320 138.667 320L106.667 320L106.667 448", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M234.667 448L234.667 320L298.667 448L298.667 320", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "polygon": PortIcon(
+      name: "polygon",
+      shapes: [
+        IconShape(d: "M256 106.667M213.333 106.667C213.333 130.231 232.436 149.333 256 149.333C279.564 149.333 298.667 130.231 298.667 106.667C298.667 83.103 279.564 64 256 64C232.436 64 213.333 83.103 213.333 106.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M405.333 170.667M362.667 170.667C362.667 194.231 381.769 213.333 405.333 213.333C428.897 213.333 448 194.231 448 170.667C448 147.103 428.897 128 405.333 128C381.769 128 362.667 147.103 362.667 170.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M106.667 234.667M64 234.667C64 258.231 83.103 277.333 106.667 277.333C130.231 277.333 149.333 258.231 149.333 234.667C149.333 211.103 130.231 192 106.667 192C83.103 192 64 211.103 64 234.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M320 405.333M277.333 405.333C277.333 428.897 296.436 448 320 448C343.564 448 362.667 428.897 362.667 405.333C362.667 381.769 343.564 362.667 320 362.667C296.436 362.667 277.333 381.769 277.333 405.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M138.667 202.667L213.333 138.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M298.667 117.333L362.667 149.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M394.667 213.333L341.333 362.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M288 373.333L138.667 266.667", filled: false, strokeWidth: 26.667)
       ]
     ),
     "present": PortIcon(
@@ -386,6 +1136,18 @@ public enum PortIcons {
         IconShape(d: "M256 341.333L256 426.667", filled: false, strokeWidth: 26.667),
         IconShape(d: "M192 426.667L320 426.667", filled: false, strokeWidth: 26.667),
         IconShape(d: "M170.667 256L234.667 192L277.333 234.667L341.333 170.667", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "publish": PortIcon(
+      name: "publish",
+      shapes: [
+        IconShape(d: "M430.08 232.48C433.36 223.92 435.2 214.56 435.2 204.8C435.2 162.4 400.8 128 358.4 128C342.64 128 327.92 132.8 315.76 140.96C293.6 102.56 252.24 76.8 204.8 76.8C134.08 76.8 76.8 134.08 76.8 204.8C76.8 206.96 76.88 209.12 76.96 211.28C32.16 227.04 0 269.76 0 320C0 383.6 51.6 435.2 115.2 435.2L409.6 435.2C466.16 435.2 512 389.36 512 332.8C512 283.28 476.8 241.92 430.08 232.48ZM314.72 281.6L262.4 281.6L262.4 371.2C262.4 378.24 256.64 384 249.6 384L211.2 384C204.16 384 198.4 378.24 198.4 371.2L198.4 281.6L146.08 281.6C134.64 281.6 128.96 267.84 137.04 259.76L221.36 175.44C226.32 170.48 234.48 170.48 239.44 175.44L323.76 259.76C331.84 267.84 326.08 281.6 314.72 281.6Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "questioncircle": PortIcon(
+      name: "questioncircle",
+      shapes: [
+        IconShape(d: "M504 256C504 392.997 392.957 504 256 504C119.043 504 8 392.997 8 256C8 119.083 119.043 8 256 8C392.957 8 504 119.083 504 256ZM262.655 90C208.158 90 173.4 112.957 146.106 153.758C142.57 159.044 143.753 166.173 148.821 170.016L183.52 196.326C188.725 200.273 196.141 199.334 200.185 194.204C218.049 171.546 230.298 158.407 257.488 158.407C277.917 158.407 303.186 171.555 303.186 191.365C303.186 206.341 290.823 214.032 270.652 225.341C247.128 238.528 216 254.941 216 296L216 300C216 306.627 221.373 312 228 312L284 312C290.627 312 296 306.627 296 300L296 298.667C296 270.205 379.186 269.02 379.186 192C379.186 133.998 319.021 90 262.655 90ZM256 338C230.635 338 210 358.635 210 384C210 409.364 230.635 430 256 430C281.365 430 302 409.364 302 384C302 358.635 281.365 338 256 338Z", filled: true, strokeWidth: 0.0)
       ]
     ),
     "rectangle": PortIcon(
@@ -408,10 +1170,37 @@ public enum PortIcons {
         IconShape(d: "M64 85.333L64 170.667L149.333 170.667", filled: false, strokeWidth: 26.667)
       ]
     ),
+    "resetzoom": PortIcon(
+      name: "resetzoom",
+      shapes: [
+        IconShape(d: "M74 280C93.377 330.246 136.87 367.268 189.565 378.373C242.26 389.477 296.995 373.154 335 335C365.109 305.308 382.06 264.787 382.06 222.5C382.06 180.213 365.109 139.692 335 110C305.308 79.891 264.787 62.94 222.5 62.94C180.213 62.94 139.692 79.891 110 110C104.5 115.5 99.5 121 95 127L95 129L118.5 129C131 129 141.5 139.5 141.5 152C141.5 164.5 131 174.5 118.5 174.5L45 174.5C38.5 174.5 32.5 171.5 28.5 167.5C24 163 21.5 157.5 21.5 151L21.5 78C21.5 65.5 31.5 55.5 44 55.5C56.5 55.5 66.5 65.5 66.5 78L66.5 94L67 94.5C137.278 8.482 263.982 -4.278 350 66C436.018 136.278 448.778 262.982 378.5 349L484.5 455C491.118 463.358 490.423 475.347 482.885 482.885C475.347 490.423 463.358 491.118 455 484.5L349 378.5C297.739 419.904 229.407 433.477 166.213 414.808C103.019 396.14 53.033 347.613 32.5 285C32.259 274.197 40.255 264.975 50.983 263.682C61.711 262.39 71.668 269.449 74 280Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M74 280C93.377 330.246 136.87 367.268 189.565 378.373C242.26 389.477 296.995 373.154 335 335C365.109 305.308 382.06 264.787 382.06 222.5C382.06 180.213 365.109 139.692 335 110C305.308 79.891 264.787 62.94 222.5 62.94C180.213 62.94 139.692 79.891 110 110C104.5 115.5 99.5 121 95 127L95 129L118.5 129C131 129 141.5 139.5 141.5 152C141.5 164.5 131 174.5 118.5 174.5L45 174.5C38.5 174.5 32.5 171.5 28.5 167.5C24 163 21.5 157.5 21.5 151L21.5 78C21.5 65.5 31.5 55.5 44 55.5C56.5 55.5 66.5 65.5 66.5 78L66.5 94L67 94.5C137.278 8.482 263.982 -4.278 350 66C436.018 136.278 448.778 262.982 378.5 349L484.5 455C491.118 463.358 490.423 475.347 482.885 482.885C475.347 490.423 463.358 491.118 455 484.5L349 378.5C297.739 419.904 229.407 433.477 166.213 414.808C103.019 396.14 53.033 347.613 32.5 285C32.259 274.197 40.255 264.975 50.983 263.682C61.711 262.39 71.668 269.449 74 280Z", filled: false, strokeWidth: 20.0)
+      ]
+    ),
+    "resize": PortIcon(
+      name: "resize",
+      shapes: [
+        IconShape(d: "M85.333 234.667L85.333 405.333C85.333 417.115 94.885 426.667 106.667 426.667L277.333 426.667M85.333 128L85.333 106.667C85.333 94.885 94.885 85.333 106.667 85.333L128 85.333M234.667 85.333L277.333 85.333M384 85.333L405.333 85.333C417.115 85.333 426.667 94.885 426.667 106.667L426.667 128M426.667 234.667L426.667 277.333M426.667 384L426.667 405.333C426.667 417.115 417.115 426.667 405.333 426.667L384 426.667", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 256L234.667 256C246.449 256 256 265.551 256 277.333L256 426.667", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "retry": PortIcon(
+      name: "retry",
+      shapes: [
+        IconShape(d: "M426.667 234.667C415.942 157.494 354.899 97.044 277.625 87.073C200.351 77.102 125.963 120.077 96 192M85.333 106.667L85.333 192L170.667 192", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M85.333 277.333C96.058 354.506 157.101 414.956 234.375 424.927C311.649 434.898 386.037 391.923 416 320M426.667 405.333L426.667 320L341.333 320", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "save": PortIcon(
       name: "save",
       shapes: [
         IconShape(d: "M465.941 129.941L382.059 46.059C373.057 37.057 360.848 32 348.118 32L80 32C53.49 32 32 53.49 32 80L32 432C32 458.51 53.49 480 80 480L432 480C458.51 480 480 458.51 480 432L480 163.882C480 151.152 474.943 138.943 465.941 129.941ZM256 416C220.654 416 192 387.346 192 352C192 316.654 220.654 288 256 288C291.346 288 320 316.654 320 352C320 387.346 291.346 416 256 416ZM352 111.48L352 212C352 218.627 346.627 224 340 224L108 224C101.373 224 96 218.627 96 212L96 108C96 101.373 101.373 96 108 96L336.52 96C339.703 96 342.755 97.264 345.005 99.515L348.485 102.995C350.736 105.245 352 108.297 352 111.48Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "saveas": PortIcon(
+      name: "saveas",
+      shapes: [
+        IconShape(d: "M284 54L235 8C229.716 2.855 222.509 -0.027 215 0L60 0C44 0 32 12 32 27L32 222C32 237 44 248 60 248L264 248C279 248 292 237 292 222L292 73C292.028 65.899 289.154 59.072 284 54ZM162 213C141 213 125 197 125 177C125 158 141 142 162 142C182 142 199 158 199 177C199 197 182 213 162 213ZM218 44L218 100C218 104 214 106 211 106L76 106C72 106 69 104 69 100L69 42C69 38 72 35 76 35L209 35L213 37L216 39C217.307 40.333 218.027 42.133 218 44ZM328 201L415 296L227 501L149 510C139 511 130 502 131 490L140 406ZM469 187L428 143C422.123 136.496 413.766 132.785 405 132.785C396.234 132.785 387.877 136.496 382 143L344 184L431 279L469 237C482 223 482 201 469 187Z", filled: true, strokeWidth: 0.0)
       ]
     ),
     "search": PortIcon(
@@ -421,11 +1210,126 @@ public enum PortIcons {
         IconShape(d: "M448 448L320 320", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "selectall": PortIcon(
+      name: "selectall",
+      shapes: [
+        IconShape(d: "M170.667 170.667M170.667 192C170.667 180.218 180.218 170.667 192 170.667L320 170.667C331.782 170.667 341.333 180.218 341.333 192L341.333 320C341.333 331.782 331.782 341.333 320 341.333L192 341.333C180.218 341.333 170.667 331.782 170.667 320Z", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 426.667L256 426.88", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M341.333 426.667L341.333 426.88", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M170.667 426.667L170.667 426.88", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 426.667L85.333 426.88", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 341.333L85.333 341.547", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 256L85.333 256.213", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 170.667L85.333 170.88", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 85.333L85.333 85.547", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M170.667 85.333L170.667 85.547", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 85.333L256 85.547", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M341.333 85.333L341.333 85.547", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M426.667 85.333L426.667 85.547", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M426.667 170.667L426.667 170.88", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M426.667 256L426.667 256.213", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M426.667 341.333L426.667 341.547", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M426.667 426.667L426.667 426.88", filled: false, strokeWidth: 42.667)
+      ]
+    ),
     "selection": PortIcon(
       name: "selection",
       shapes: [
         IconShape(d: "M139.636 139.636L236.288 414.092C237.709 417.051 240.708 418.927 243.991 418.909C247.281 418.93 250.289 417.055 251.718 414.092L302.545 302.545L413.952 256.14C416.945 254.834 418.887 251.888 418.909 248.623C418.887 245.357 416.945 242.411 413.952 241.105L139.636 139.636Z", filled: false, strokeWidth: 29.091),
         IconShape(d: "M314.182 314.182L418.909 418.909", filled: false, strokeWidth: 29.091)
+      ]
+    ),
+    "sendbackward": PortIcon(
+      name: "sendbackward",
+      shapes: [
+        IconShape(d: "M256 405.333L256 106.667", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.667 320L256 405.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M341.333 320L256 405.333", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "sendtoback": PortIcon(
+      name: "sendtoback",
+      shapes: [
+        IconShape(d: "M256 298.667L256 85.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 298.667L170.667 213.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 298.667L341.333 213.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M426.667 426.667L85.333 426.667", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "settings": PortIcon(
+      name: "settings",
+      shapes: [
+        IconShape(d: "M298.667 128M256 128C256 151.564 275.103 170.667 298.667 170.667C322.231 170.667 341.333 151.564 341.333 128C341.333 104.436 322.231 85.333 298.667 85.333C275.103 85.333 256 104.436 256 128", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M85.333 128L256 128", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M341.333 128L426.667 128", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M170.667 256M128 256C128 279.564 147.103 298.667 170.667 298.667C194.231 298.667 213.333 279.564 213.333 256C213.333 232.436 194.231 213.333 170.667 213.333C147.103 213.333 128 232.436 128 256", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M85.333 256L128 256", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M213.333 256L426.667 256", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M362.667 384M320 384C320 407.564 339.103 426.667 362.667 426.667C386.231 426.667 405.333 407.564 405.333 384C405.333 360.436 386.231 341.333 362.667 341.333C339.103 341.333 320 360.436 320 384", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M85.333 384L320 384", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M405.333 384L426.667 384", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "share": PortIcon(
+      name: "share",
+      shapes: [
+        IconShape(d: "M128 320C163.346 320 192 291.346 192 256C192 220.654 163.346 192 128 192C92.654 192 64 220.654 64 256C64 291.346 92.654 320 128 320ZM384 192C419.346 192 448 163.346 448 128C448 92.654 419.346 64 384 64C348.654 64 320 92.654 320 128C320 163.346 348.654 192 384 192ZM384 448C419.346 448 448 419.346 448 384C448 348.654 419.346 320 384 320C348.654 320 320 348.654 320 384C320 419.346 348.654 448 384 448ZM185.6 228.275L326.4 155.725M185.6 283.725L326.4 356.275", filled: false, strokeWidth: 38.4)
+      ]
+    ),
+    "shareios": PortIcon(
+      name: "shareios",
+      shapes: [
+        IconShape(d: "M341.333 106.667L311.04 136.96L277.12 103.04L277.12 341.333L234.88 341.333L234.88 103.04L200.96 136.96L170.667 106.667L256 21.333L341.333 106.667ZM426.667 213.333L426.667 448C426.667 471.467 407.467 490.667 384 490.667L128 490.667C104.32 490.667 85.333 471.467 85.333 448L85.333 213.333C85.333 189.653 104.32 170.667 128 170.667L192 170.667L192 213.333L128 213.333L128 448L384 448L384 213.333L320 213.333L320 170.667L384 170.667C407.467 170.667 426.667 189.653 426.667 213.333Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "sharewindows": PortIcon(
+      name: "sharewindows",
+      shapes: [
+        IconShape(d: "M320 44.8L320 93.6L287.2 99.2C216 110.4 155.2 154.4 122.4 219.2C104 256 87.2 344 99.2 344C102.4 344 118.4 333.6 134.4 320C174.4 288.8 231.2 264 280 258.4L320 253.6L320 356L409.6 265.6L500 176L409.6 86.4L320 -4L320 44.8ZM401.6 225.6L352 276L352 221.6L296.8 226.4C265.6 228.8 218.4 240 191.2 251.2C163.2 262.4 139.2 270.4 137.6 268.8C130.4 260.8 161.6 208.8 188.8 182.4C224 148.8 275.2 128 320.8 128C350.4 128 352 127.2 352 102.4L352 76L401.6 126.4L452 176L401.6 225.6Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M0 288L0 448L384 448L384 398.4C384 350.4 384 349.6 368 364C359.2 372 352 387.2 352 397.6L352 416L32 416L32 272C32 133.6 31.2 128 16 128C0.8 128 0 133.6 0 288Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M0 288L0 448L384 448L384 398.4C384 350.4 384 349.6 368 364C359.2 372 352 387.2 352 397.6L352 416L32 416L32 272C32 133.6 31.2 128 16 128C0.8 128 0 133.6 0 288Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "shield": PortIcon(
+      name: "shield",
+      shapes: [
+        IconShape(d: "M246.464 488.405C252.466 491.412 259.534 491.412 265.536 488.405C265.536 488.405 330.325 456.064 382.123 401.003C418.475 362.389 448 312.811 448 256L448 106.667C447.997 97.776 442.48 89.819 434.155 86.699L263.488 22.699C258.661 20.885 253.339 20.885 248.512 22.699L77.845 86.699C69.52 89.819 64.003 97.776 64 106.667L64 256C64 312.811 93.525 362.389 129.877 401.003C181.675 456.064 246.464 488.405 246.464 488.405ZM218.667 307.477L360.405 165.739C367.545 158.599 379.121 158.599 386.261 165.739C393.401 172.879 393.401 184.455 386.261 191.595L231.595 346.261C228.169 349.695 223.517 351.625 218.667 351.625C213.816 351.625 209.165 349.695 205.739 346.261L125.739 266.261C118.599 259.121 118.599 247.545 125.739 240.405C132.879 233.265 144.455 233.265 151.595 240.405L218.667 307.477Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "sidebar": PortIcon(
+      name: "sidebar",
+      shapes: [
+        IconShape(d: "M85.333 85.333M85.333 128C85.333 104.436 104.436 85.333 128 85.333L384 85.333C407.564 85.333 426.667 104.436 426.667 128L426.667 384C426.667 407.564 407.564 426.667 384 426.667L128 426.667C104.436 426.667 85.333 407.564 85.333 384Z", filled: false, strokeWidth: 37.333),
+        IconShape(d: "M320 85.333L320 426.667", filled: false, strokeWidth: 37.333)
+      ]
+    ),
+    "slash": PortIcon(
+      name: "slash",
+      shapes: [
+        IconShape(d: "M128 384L384 128", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "snap": PortIcon(
+      name: "snap",
+      shapes: [
+        IconShape(d: "M85.333 277.333L85.333 106.667C85.333 83.103 104.436 64 128 64L149.333 64C172.897 64 192 83.103 192 106.667L192 277.333C192 312.68 220.654 341.333 256 341.333C291.346 341.333 320 312.68 320 277.333L320 106.667C320 83.103 339.103 64 362.667 64L384 64C407.564 64 426.667 83.103 426.667 106.667L426.667 277.333C426.667 371.59 350.257 448 256 448C161.743 448 85.333 371.59 85.333 277.333", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M85.333 170.667L192 170.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M320 170.667L405.333 170.667", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "stackpush": PortIcon(
+      name: "stackpush",
+      shapes: [
+        IconShape(d: "M128 213.333L85.333 234.667L256 320L426.667 234.667L384 213.333", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 320L256 405.333L426.667 320", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 85.333L256 234.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M320 170.667L256 234.667L192 170.667", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "start": PortIcon(
+      name: "start",
+      shapes: [
+        IconShape(d: "M256 8C119 8 8 119 8 256C8 393 119 504 256 504C393 504 504 393 504 256C504 119 393 8 256 8ZM371.7 280L195.7 381C179.9 389.8 160 378.5 160 360L160 152C160 133.6 179.8 122.2 195.7 131L371.7 238C388.1 247.2 388.1 270.9 371.7 280Z", filled: true, strokeWidth: 0.0)
       ]
     ),
     "stats": PortIcon(
@@ -453,6 +1357,18 @@ public enum PortIcons {
         IconShape(d: "M170.667 277.333L277.333 277.333", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "stop": PortIcon(
+      name: "stop",
+      shapes: [
+        IconShape(d: "M256 8C119 8 8 119 8 256C8 393 119 504 256 504C393 504 504 393 504 256C504 119 393 8 256 8ZM352 336C352 344.8 344.8 352 336 352L176 352C167.2 352 160 344.8 160 336L160 176C160 167.2 167.2 160 176 160L336 160C344.8 160 352 167.2 352 176L352 336Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "stroke": PortIcon(
+      name: "stroke",
+      shapes: [
+        IconShape(d: "M128 213.333L213.333 128L128 298.667L298.667 128L128 384L384 128L213.333 384L384 213.333L298.667 384L384 298.667", filled: false, strokeWidth: 21.333)
+      ]
+    ),
     "strokestyledashed": PortIcon(
       name: "strokestyledashed",
       shapes: [
@@ -477,6 +1393,24 @@ public enum PortIcons {
         IconShape(d: "M76.8 256L435.2 256", filled: false, strokeWidth: 25.6)
       ]
     ),
+    "strokevariabilityconstant": PortIcon(
+      name: "strokevariabilityconstant",
+      shapes: [
+        IconShape(d: "M85.333 256C106.667 170.667 128 170.667 170.667 256", filled: false, strokeWidth: 21.333),
+        IconShape(d: "M170.667 256C192 341.333 213.333 341.333 256 256", filled: false, strokeWidth: 21.333),
+        IconShape(d: "M256 256C298.667 170.667 320 170.667 341.333 256", filled: false, strokeWidth: 21.333),
+        IconShape(d: "M341.333 256C362.667 341.333 384 341.333 405.333 256", filled: false, strokeWidth: 21.333)
+      ]
+    ),
+    "strokevariabilityvariable": PortIcon(
+      name: "strokevariabilityvariable",
+      shapes: [
+        IconShape(d: "M85.333 256C106.667 170.667 128 170.667 170.667 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.667 256C192 341.333 213.333 341.333 256 256", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M256 256C298.667 170.667 320 170.667 341.333 256", filled: false, strokeWidth: 58.667),
+        IconShape(d: "M341.333 256C362.667 341.333 384 341.333 405.333 256", filled: false, strokeWidth: 69.333)
+      ]
+    ),
     "strokewidthbase": PortIcon(
       name: "strokewidthbase",
       shapes: [
@@ -495,6 +1429,28 @@ public enum PortIcons {
         IconShape(d: "M128 256L384 256", filled: false, strokeWidth: 96.0)
       ]
     ),
+    "sun": PortIcon(
+      name: "sun",
+      shapes: [
+        IconShape(d: "M256 320C291.346 320 320 291.346 320 256C320 220.654 291.346 192 256 192C220.654 192 192 220.654 192 256C192 291.346 220.654 320 256 320ZM256 106.675L256 64M362.675 149.325L392.525 119.475M405.325 256L448 256M362.675 362.675L392.525 392.525M256 405.325L256 448M149.325 362.675L119.475 392.525M128 256L85.325 256M149.325 149.325L119.475 119.475", filled: false, strokeWidth: 38.4)
+      ]
+    ),
+    "svg": PortIcon(
+      name: "svg",
+      shapes: [
+        IconShape(d: "M298.667 64L298.667 149.333C298.667 161.115 308.218 170.667 320 170.667L405.333 170.667", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M106.667 256L106.667 106.667C106.667 83.103 125.769 64 149.333 64L298.667 64L405.333 170.667L405.333 256", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M85.333 432C85.333 440.832 92.501 448 101.333 448L128 448C139.782 448 149.333 438.449 149.333 426.667L149.333 405.333C149.333 393.551 139.782 384 128 384L106.667 384C94.885 384 85.333 374.449 85.333 362.667L85.333 341.333C85.333 329.551 94.885 320 106.667 320L133.333 320C142.17 320 149.333 327.163 149.333 336", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M213.333 320L256 448L298.667 320", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M426.667 320L405.333 320C381.769 320 362.667 339.103 362.667 362.667L362.667 405.333C362.667 428.897 381.769 448 405.333 448L426.667 448L426.667 384", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "tablercheck": PortIcon(
+      name: "tablercheck",
+      shapes: [
+        IconShape(d: "M106.667 256L213.333 362.667L426.667 149.333", filled: false, strokeWidth: 42.667)
+      ]
+    ),
     "text": PortIcon(
       name: "text",
       shapes: [
@@ -505,10 +1461,75 @@ public enum PortIcons {
         IconShape(d: "M106.667 426.667L234.667 85.333L277.333 85.333L426.667 426.667", filled: false, strokeWidth: 32.0)
       ]
     ),
+    "textalignbottom": PortIcon(
+      name: "textalignbottom",
+      shapes: [
+        IconShape(d: "M85.333 426.667L426.667 426.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M234.667 85.333L277.333 85.333C300.897 85.333 320 104.436 320 128L320 298.667C320 322.231 300.897 341.333 277.333 341.333L234.667 341.333C211.103 341.333 192 322.231 192 298.667L192 128C192 104.436 211.103 85.333 234.667 85.333Z", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "textaligncenter": PortIcon(
+      name: "textaligncenter",
+      shapes: [
+        IconShape(d: "M85.333 170.667L426.667 170.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M170.667 256L341.333 256", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M128 341.333L384 341.333", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "textalignleft": PortIcon(
+      name: "textalignleft",
+      shapes: [
+        IconShape(d: "M85.333 170.667L426.667 170.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 256L256 256", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M85.333 341.333L341.333 341.333", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "textalignmiddle": PortIcon(
+      name: "textalignmiddle",
+      shapes: [
+        IconShape(d: "M85.333 256L192 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M320 256L426.667 256", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M234.667 128L277.333 128C300.897 128 320 147.103 320 170.667L320 341.333C320 364.897 300.897 384 277.333 384L234.667 384C211.103 384 192 364.897 192 341.333L192 170.667C192 147.103 211.103 128 234.667 128Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "textalignright": PortIcon(
+      name: "textalignright",
+      shapes: [
+        IconShape(d: "M85.333 170.667L426.667 170.667", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M213.333 256L426.667 256", filled: false, strokeWidth: 42.667),
+        IconShape(d: "M170.667 341.333L426.667 341.333", filled: false, strokeWidth: 42.667)
+      ]
+    ),
+    "textaligntop": PortIcon(
+      name: "textaligntop",
+      shapes: [
+        IconShape(d: "M85.333 85.333L426.667 85.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M234.667 170.667L277.333 170.667C300.897 170.667 320 189.769 320 213.333L320 384C320 407.564 300.897 426.667 277.333 426.667L234.667 426.667C211.103 426.667 192 407.564 192 384L192 213.333C192 189.769 211.103 170.667 234.667 170.667Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "textsize": PortIcon(
+      name: "textsize",
+      shapes: [
+        IconShape(d: "M64 149.333L64 106.667L341.333 106.667L341.333 149.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M213.333 106.667L213.333 405.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 405.333L170.667 405.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M320 277.333L320 256L448 256L448 277.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M384 256L384 405.333", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M362.667 405.333L405.333 405.333", filled: false, strokeWidth: 32.0)
+      ]
+    ),
     "theme": PortIcon(
       name: "theme",
       shapes: [
         IconShape(d: "M256 64L264.397 64C207.833 116.545 196.857 201.987 238.304 267.122C279.752 332.257 361.799 358.506 433.357 329.523C396.386 418.457 299.248 466.238 206.236 441.242C113.224 416.246 53.124 326.208 65.714 230.722C78.304 135.237 159.688 63.854 256 63.821L256 64Z", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "toolslock": PortIcon(
+      name: "toolslock",
+      shapes: [
+        IconShape(d: "M346.675 218.675L165.325 218.675C129.979 218.675 101.325 247.329 101.325 282.675L101.325 378.675C101.325 395.649 108.068 411.928 120.07 423.93C132.072 435.932 148.351 442.675 165.325 442.675L346.675 442.675C363.649 442.675 379.928 435.932 391.93 423.93C403.932 411.928 410.675 395.649 410.675 378.675L410.675 282.675C410.675 247.329 382.021 218.675 346.675 218.675Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M256 357.325C265.723 357.626 274.838 352.611 279.789 344.238C284.739 335.864 284.739 325.46 279.789 317.087C274.838 308.714 265.723 303.699 256 304C241.596 304.446 230.151 316.252 230.151 330.662C230.151 345.073 241.596 356.878 256 357.325Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M170.675 213.325L170.675 138.675C170.675 97.434 208.87 64 256 64C303.13 64 341.325 97.434 341.325 138.675L341.325 213.325", filled: false, strokeWidth: 32.0)
       ]
     ),
     "trash": PortIcon(
@@ -532,17 +1553,17 @@ public enum PortIcons {
         IconShape(d: "M281.319 281.319L450.11 281.319L450.11 450.11L281.319 450.11", filled: true, strokeWidth: 0.0),
         IconShape(d: "M281.319 450.11C281.319 405.397 281.319 360.681 281.319 281.319M281.319 281.319C331.129 281.319 380.939 281.319 450.11 281.319L281.319 281.319ZM281.319 281.319C321.305 281.319 361.292 281.319 450.11 281.319L281.319 281.319ZM450.11 281.319C450.11 338.1 450.11 394.884 450.11 450.11L450.11 281.319ZM450.11 281.319C450.11 318.506 450.11 355.691 450.11 450.11L450.11 281.319ZM450.11 450.11C409.414 450.11 368.719 450.11 281.319 450.11L450.11 450.11ZM450.11 450.11C403.599 450.11 357.089 450.11 281.319 450.11L450.11 450.11ZM281.319 450.11C281.319 404.145 281.319 358.178 281.319 281.319L281.319 450.11Z", filled: true, strokeWidth: 0.0),
         IconShape(d: "M281.319 450.11C281.319 405.397 281.319 360.681 281.319 281.319M281.319 281.319C331.129 281.319 380.939 281.319 450.11 281.319L281.319 281.319ZM281.319 281.319C321.305 281.319 361.292 281.319 450.11 281.319L281.319 281.319ZM450.11 281.319C450.11 338.1 450.11 394.884 450.11 450.11L450.11 281.319ZM450.11 281.319C450.11 318.506 450.11 355.691 450.11 450.11L450.11 281.319ZM450.11 450.11C409.414 450.11 368.719 450.11 281.319 450.11L450.11 450.11ZM450.11 450.11C403.599 450.11 357.089 450.11 281.319 450.11L450.11 450.11ZM281.319 450.11C281.319 404.145 281.319 358.178 281.319 281.319L281.319 450.11Z", filled: false, strokeWidth: 5.626),
-        IconShape(d: "M7.033 7.033L91.429 7.033L91.429 91.429L7.033 91.429Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M7.033 7.033L91.429 7.033L91.429 91.429L7.033 91.429Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M7.033 7.033L91.429 7.033L91.429 91.429L7.033 91.429Z", filled: false, strokeWidth: 16.879),
-        IconShape(d: "M220.835 420.571L305.231 420.571L305.231 504.967L220.835 504.967Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M220.835 420.571L305.231 420.571L305.231 504.967L220.835 504.967Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M220.835 420.571L305.231 420.571L305.231 504.967L220.835 504.967Z", filled: false, strokeWidth: 16.879),
-        IconShape(d: "M414.945 420.571L499.341 420.571L499.341 504.967L414.945 504.967Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M414.945 420.571L499.341 420.571L499.341 504.967L414.945 504.967Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M414.945 420.571L499.341 420.571L499.341 504.967L414.945 504.967Z", filled: false, strokeWidth: 16.879),
-        IconShape(d: "M414.945 220.835L499.341 220.835L499.341 305.231L414.945 305.231Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M414.945 220.835L499.341 220.835L499.341 305.231L414.945 305.231Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M414.945 220.835L499.341 220.835L499.341 305.231L414.945 305.231Z", filled: false, strokeWidth: 16.879),
-        IconShape(d: "M296.791 7.033L381.187 7.033L381.187 91.429L296.791 91.429Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M296.791 7.033L381.187 7.033L381.187 91.429L296.791 91.429Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M296.791 7.033L381.187 7.033L381.187 91.429L296.791 91.429Z", filled: false, strokeWidth: 16.879),
-        IconShape(d: "M7.033 288.352L91.429 288.352L91.429 372.747L7.033 372.747Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M7.033 288.352L91.429 288.352L91.429 372.747L7.033 372.747Z", filled: true, strokeWidth: 0.0, knockout: true),
         IconShape(d: "M7.033 288.352L91.429 288.352L91.429 372.747L7.033 372.747Z", filled: false, strokeWidth: 16.879)
       ]
     ),
@@ -552,6 +1573,52 @@ public enum PortIcons {
         IconShape(d: "M346.675 218.675L165.325 218.675C129.979 218.675 101.325 247.329 101.325 282.675L101.325 378.675C101.325 395.649 108.068 411.928 120.07 423.93C132.072 435.932 148.351 442.675 165.325 442.675L346.675 442.675C363.649 442.675 379.928 435.932 391.93 423.93C403.932 411.928 410.675 395.649 410.675 378.675L410.675 282.675C410.675 247.329 382.021 218.675 346.675 218.675Z", filled: false, strokeWidth: 32.0),
         IconShape(d: "M256 357.325C265.723 357.626 274.838 352.611 279.789 344.238C284.739 335.864 284.739 325.46 279.789 317.087C274.838 308.714 265.723 303.699 256 304C241.596 304.446 230.151 316.252 230.151 330.662C230.151 345.073 241.596 356.878 256 357.325Z", filled: false, strokeWidth: 32.0),
         IconShape(d: "M131.814 244.762L131.814 276.762L195.814 276.762L195.814 244.762L131.814 244.762ZM261.35 42.675L261.35 10.675L261.35 42.675ZM326.861 132.48L326.861 164.48L390.861 164.48L390.861 132.48L326.861 132.48ZM195.789 217.856L195.789 132.48L131.789 132.48L131.789 217.856L195.789 217.856ZM195.789 132.506C195.789 118.067 202.01 103.629 214.042 92.544L170.701 45.44C146.15 68.045 131.789 99.302 131.789 132.48L195.789 132.48ZM214.042 92.544C227.028 80.911 243.891 74.547 261.325 74.701L261.325 10.701C227.789 10.701 195.149 22.938 170.701 45.466L214.016 92.518ZM261.325 74.701C279.501 74.701 296.499 81.357 308.608 92.544L351.974 45.466C327.177 22.952 294.843 10.548 261.35 10.701L261.35 74.701ZM308.608 92.544C320.64 103.629 326.861 118.067 326.861 132.506L390.861 132.506C390.861 99.328 376.525 68.07 351.949 45.466L308.608 92.544Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "users": PortIcon(
+      name: "users",
+      shapes: [
+        IconShape(d: "M106.667 149.333C106.667 102.205 144.872 64 192 64C239.128 64 277.333 102.205 277.333 149.333C277.333 196.462 239.128 234.667 192 234.667C144.872 234.667 106.667 196.462 106.667 149.333Z", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M64 448L64 405.333C64 358.205 102.205 320 149.333 320L234.667 320C281.795 320 320 358.205 320 405.333L320 448", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M341.333 66.773C379.092 76.441 405.501 110.464 405.501 149.44C405.501 188.416 379.092 222.439 341.333 232.107", filled: false, strokeWidth: 32.0),
+        IconShape(d: "M448 448L448 405.333C447.777 366.604 421.5 332.882 384 323.2", filled: false, strokeWidth: 32.0)
+      ]
+    ),
+    "warning": PortIcon(
+      name: "warning",
+      shapes: [
+        IconShape(d: "M256 32C270.2 32 283.3 39.5 290.5 51.8L506.5 419.8C513.8 432.2 513.8 447.5 506.7 459.9C499.6 472.3 486.3 480 472 480L40 480C25.7 480 12.4 472.3 5.3 459.9C-1.8 447.5 -1.7 432.1 5.5 419.8L221.5 51.8C228.7 39.5 241.8 32 256 32ZM256 160C242.7 160 232 170.7 232 184L232 296C232 309.3 242.7 320 256 320C269.3 320 280 309.3 280 296L280 184C280 170.7 269.3 160 256 160ZM288 384C288 366.327 273.673 352 256 352C238.327 352 224 366.327 224 384C224 401.673 238.327 416 256 416C273.673 416 288 401.673 288 384Z", filled: true, strokeWidth: 0.0)
+      ]
+    ),
+    "welcomescreenhelparrow": PortIcon(
+      name: "welcomescreenhelparrow",
+      shapes: [
+        IconShape(d: "M108.58 49.586C76.848 128.645 75.162 251.705 128.367 304.447C181.513 357.153 329.011 378.561 383.898 385.903", filled: false, strokeWidth: 12.047),
+        IconShape(d: "M434.784 399.041L356.129 338.805L338.372 420.846L434.784 399.041Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M434.784 399.041C415.732 384.41 396.613 369.79 356.129 338.805M434.784 399.041C403.793 375.332 372.79 351.563 356.129 338.805M356.129 338.805C351.431 360.508 346.714 382.151 338.372 420.846M356.129 338.805C349.347 369.935 342.636 401.125 338.372 420.846M338.372 420.846C369.501 413.822 400.619 406.733 434.784 399.041M338.372 420.846C371.561 413.329 404.691 405.817 434.784 399.041", filled: false, strokeWidth: 12.047)
+      ]
+    ),
+    "welcomescreenmenuarrow": PortIcon(
+      name: "welcomescreenmenuarrow",
+      shapes: [
+        IconShape(d: "M354.043 454.809C277.787 443.915 256.91 397.764 239.66 332.255C222.41 266.806 209.702 119.83 209.702 68.085", filled: false, strokeWidth: 10.894),
+        IconShape(d: "M209.729 57.072L252.786 135.631L177.021 140.255L209.729 57.066Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M209.729 57.072C220.187 76.108 230.634 95.199 252.786 135.631M209.729 57.072C226.669 88.026 243.663 118.991 252.786 135.631M252.786 135.631C232.742 136.862 212.752 138.109 177.021 140.261M252.786 135.631C224.033 137.428 195.235 139.155 177.021 140.261M177.021 140.261C187.566 113.403 198.166 86.555 209.729 57.072M177.021 140.255C188.291 111.621 199.544 83.037 209.729 57.072", filled: false, strokeWidth: 10.894)
+      ]
+    ),
+    "welcomescreentoptoolbararrow": PortIcon(
+      name: "welcomescreentoptoolbararrow",
+      shapes: [
+        IconShape(d: "M137.846 505.436C229.744 492.308 346.801 426.844 367.59 347.897C388.378 269.023 328.205 118.154 305.231 62.359", filled: false, strokeWidth: 13.128),
+        IconShape(d: "M289.904 7.175L275.909 114.229L363.015 86.279L289.904 7.181Z", filled: true, strokeWidth: 0.0),
+        IconShape(d: "M289.904 7.175C286.477 33.122 283.097 59.136 275.909 114.229M289.897 7.175C284.416 49.342 278.869 91.55 275.915 114.222M275.915 114.222C298.955 106.837 321.95 99.499 363.021 86.279M275.915 114.222C308.985 103.667 342.082 93.007 363.021 86.279M363.021 86.279C339.423 60.731 315.779 35.23 289.897 7.181M363.021 86.279C337.835 59.051 312.694 31.882 289.897 7.181", filled: false, strokeWidth: 13.128)
+      ]
+    ),
+    "xbrand": PortIcon(
+      name: "xbrand",
+      shapes: [
+        IconShape(d: "M85.333 85.333L335.637 426.667L426.667 426.667L176.363 85.333Z", filled: false, strokeWidth: 26.667),
+        IconShape(d: "M85.333 426.667L229.717 282.283M282.197 229.803L426.667 85.333", filled: false, strokeWidth: 26.667)
       ]
     ),
     "youtube": PortIcon(
@@ -569,6 +1636,12 @@ public enum PortIcons {
         IconShape(d: "M256 64C242.293 73.838 234.313 89.798 234.667 106.667C234.313 123.535 242.293 139.495 256 149.333", filled: false, strokeWidth: 26.667),
         IconShape(d: "M64 213.333L362.667 213.333L362.667 320C362.667 390.692 305.359 448 234.667 448L192 448C121.308 448 64 390.692 64 320L64 213.333Z", filled: false, strokeWidth: 26.667),
         IconShape(d: "M357.248 356.821C383.463 368.856 414.489 361.866 433.011 339.754C451.534 317.641 452.975 285.871 436.531 262.172C420.086 238.473 389.821 228.703 362.624 238.315", filled: false, strokeWidth: 26.667)
+      ]
+    ),
+    "zoomIn": PortIcon(
+      name: "zoomIn",
+      shapes: [
+        IconShape(d: "M448 208L304 208L304 64C304 46.33 289.67 32 272 32L240 32C222.33 32 208 46.33 208 64L208 208L64 208C46.33 208 32 222.33 32 240L32 272C32 289.67 46.33 304 64 304L208 304L208 448C208 465.67 222.33 480 240 480L272 480C289.67 480 304 465.67 304 448L304 304L448 304C465.67 304 480 289.67 480 272L480 240C480 222.33 465.67 208 448 208Z", filled: true, strokeWidth: 0.0)
       ]
     ),
     "zoomin": PortIcon(

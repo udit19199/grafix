@@ -103,7 +103,65 @@ const REQUESTED = [
   ["architect", ["SloppinessArchitectIcon"]],
   ["artist", ["SloppinessArtistIcon"]],
   ["cartoonist", ["SloppinessCartoonistIcon"]],
+  // Friendly aliases for the properties panel and menus.
+  ["sun", ["SunIcon"]],
+  ["hamburger", ["HamburgerMenuIcon"]],
+  ["fillhachure", ["FillHachureIcon"]],
+  ["fillcrosshatch", ["FillCrossHatchIcon"]],
+  ["fillsolid", ["FillSolidIcon"]],
+  ["fillzigzag", ["FillZigZagIcon"]],
+  ["edgesharp", ["EdgeSharpIcon"]],
+  ["edgeround", ["EdgeRoundIcon"]],
+  ["arrowsharp", ["sharpArrowIcon"]],
+  ["arrowround", ["roundArrowIcon"]],
+  ["arrowelbow", ["elbowArrowIcon"]],
+  ["mermaid", ["mermaidLogoIcon"]],
+  ["toolslock", ["LockedIcon"]],
+  ["sendtoback", ["SendToBackIcon"]],
+  ["sendbackward", ["SendBackwardIcon"]],
+  ["bringforward", ["BringForwardIcon"]],
+  ["bringtofront", ["BringToFrontIcon"]],
+  ["aligntop", ["AlignTopIcon"]],
+  ["alignbottom", ["AlignBottomIcon"]],
+  ["centervertically", ["CenterVerticallyIcon"]],
+  ["centerhorizontally", ["CenterHorizontallyIcon"]],
+  ["distributehorizontally", ["DistributeHorizontallyIcon"]],
+  ["distributevertically", ["DistributeVerticallyIcon"]],
+  ["fontsizesmall", ["FontSizeSmallIcon"]],
+  ["fontsizemedium", ["FontSizeMediumIcon"]],
+  ["fontsizelarge", ["FontSizeLargeIcon"]],
+  ["fontsizeextralarge", ["FontSizeExtraLargeIcon"]],
+  ["fontfamilyhanddrawn", ["FontFamilyHeadingIcon"]],
+  ["fontfamilynormal", ["FontFamilyNormalIcon"]],
+  ["fontfamilycode", ["FontFamilyCodeIcon", "codeIcon"]],
+  ["textalignleft", ["TextAlignLeftIcon"]],
+  ["textaligncenter", ["TextAlignCenterIcon"]],
+  ["textalignright", ["TextAlignRightIcon"]],
+  ["textaligntop", ["TextAlignTopIcon"]],
+  ["textalignmiddle", ["TextAlignMiddleIcon"]],
+  ["textalignbottom", ["TextAlignBottomIcon"]],
+  ["crop", ["cropIcon"]],
+  ["flipvertical", ["flipVertical"]],
+  ["fliphorizontal", ["flipHorizontal"]],
+  ["eye", ["eyeIcon"]],
+  ["eyeclosed", ["eyeClosedIcon"]],
+  ["fullscreen", ["fullscreenIcon"]],
+  ["settings", ["settingsIcon"]],
+  ["sidebar", ["sidebarRightIcon"]],
+  ["chevronright", ["chevronRight"]],
+  ["chevronleft", ["chevronLeftIcon"]],
+  ["chevronup", ["collapseUpIcon", "upIcon"]],
+  ["copy", ["copyIcon"]],
+  ["download", ["downloadIcon"]],
+  ["snap", ["magnetIcon"]],
+  ["png", ["pngIcon"]],
+  ["svg", ["svgIcon"]],
+  ["pin", ["PinIcon"]],
+  ["more", ["DotsIcon"]],
 ];
+
+/** Export names in icons.tsx that are data helpers, not icons. */
+const NOT_ICONS = new Set(["iconFillColor", "emptyIcon", "createIcon"]);
 
 /** Human-readable explanation for keys whose geometry is reused from another icon. */
 const REUSE_NOTES = {
@@ -479,7 +537,7 @@ function findTopLevelColon(text) {
 
 const VISIBLE_PAINT_HELPERS = {
   iconFillColor: "var(--icon-fill-color)",
-  handlerColor: "#fff",
+  handlerColor: "var(--handler-color)",
   strokeColor: "var(--color-primary)",
 };
 
@@ -1303,8 +1361,13 @@ function contextForElement(attrs, ctx, state) {
   let matrix = ctx.matrix;
   const transformRaw = own.transform;
   if (transformRaw && transformRaw.kind !== "missing") {
-    const transformText =
+    let transformText =
       transformRaw.kind === "string" ? transformRaw.value : transformRaw.value ?? "";
+    // `flip ? "A" : "B"` (arrowhead previews): take the default (flip = false) branch.
+    const ternary = /^\s*[A-Za-z_$][\w$]*\s*\?\s*(?:"[^"]*"|'[^']*')\s*:\s*("[^"]*"|'[^']*')\s*$/.exec(transformText);
+    if (ternary) {
+      transformText = ternary[1].slice(1, -1);
+    }
     const parsed = parseTransform(transformText);
     if (!parsed.ok) {
       state.warnings.push(`transform "${transformText}" is not supported; affected shapes were skipped`);
@@ -1450,7 +1513,11 @@ function emitShape(tagKey, attrs, ctx, state) {
   const scaleFactor = Math.sqrt(Math.abs(determinant));
 
   if (filled) {
-    state.shapes.push({ d, filled: true, strokeWidth: 0 });
+    // handlerColor(theme) is the editor background (white / #1e1e1e): a knockout fill.
+    const knockout = fillValue.kind === "string" && fillValue.value === "var(--handler-color)";
+    state.shapes.push(
+      knockout ? { d, filled: true, strokeWidth: 0, knockout: true } : { d, filled: true, strokeWidth: 0 },
+    );
   }
   if (stroked) {
     const width = strokeWidth === null ? DEFAULT_STROKE_WIDTH : strokeWidth * scaleFactor;
@@ -1655,6 +1722,7 @@ function createResolver(defs) {
     if (!entries) {
       return result;
     }
+    let explicitHeight = false;
     const applyEntry = (entry) => {
       if (entry.spread) {
         const spreadDef = defFor(entry.spread);
@@ -1679,7 +1747,12 @@ function createResolver(defs) {
         const height = toNumber(value, null);
         if (height !== null) {
           result.height = height;
+          explicitHeight = true;
         }
+        return;
+      }
+      if (key === "style" && /rotate\(\s*180deg\s*\)/.test(entry.valueText)) {
+        result.rotate180 = true;
         return;
       }
       if (key === "mirror" || key === "style" || key === "classname") {
@@ -1690,6 +1763,10 @@ function createResolver(defs) {
       }
     };
     entries.forEach(applyEntry);
+    if (!explicitHeight) {
+      // createIcon: height defaults to width.
+      result.height = result.width;
+    }
     return result;
   }
 
@@ -1731,6 +1808,16 @@ function createResolver(defs) {
 
     const ctx = { attrs: options.attrs, matrix: [1, 0, 0, 1, 0, 0], viewBox: { width: options.width, height: options.height } };
     walkChildren(resolved.jsx, 0, null, ctx, state);
+    if (options.rotate180) {
+      // style={{ transform: "rotate(180deg)" }} on the <svg>: x -> 512 - x, y -> 512 - y.
+      for (const shape of shapes) {
+        let index = 0;
+        shape.d = shape.d.replace(/-?\d*\.?\d+(?:e-?\d+)?/g, (num) => {
+          index += 1;
+          return String(Math.round((BOX - Number(num)) * 1000) / 1000);
+        });
+      }
+    }
 
     const result = { shapes, warnings };
     resolvedCache.set(name, result);
@@ -1793,11 +1880,15 @@ function generateSwift(icons, commit) {
   lines.push("  public let filled: Bool");
   lines.push("  /// Stroke width in the 512 coordinate space. Use 0 when `filled` is true.");
   lines.push("  public let strokeWidth: Double");
+  lines.push("  /// true means the fill is the editor background colour (Excalidraw's handlerColor):");
+  lines.push("  /// draw it by clearing what is beneath, not with the icon colour.");
+  lines.push("  public let knockout: Bool");
   lines.push("");
-  lines.push("  public init(d: String, filled: Bool, strokeWidth: Double) {");
+  lines.push("  public init(d: String, filled: Bool, strokeWidth: Double, knockout: Bool = false) {");
   lines.push("    self.d = d");
   lines.push("    self.filled = filled");
   lines.push("    self.strokeWidth = strokeWidth");
+  lines.push("    self.knockout = knockout");
   lines.push("  }");
   lines.push("}");
   lines.push("");
@@ -1827,7 +1918,7 @@ function generateSwift(icons, commit) {
       lines.push(
         `        IconShape(d: ${swiftString(shape.d)}, filled: ${shape.filled}, strokeWidth: ${swiftDouble(
           shape.strokeWidth,
-        )})${comma}`,
+        )}${shape.knockout ? ", knockout: true" : ""})${comma}`,
       );
     });
     lines.push("      ]");
@@ -1846,6 +1937,21 @@ function generateSwift(icons, commit) {
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
+
+/**
+ * FillCrossHatchIcon paints a filled square through an alpha mask made of hatch strokes.
+ * Masks are not supported, so draw the hatch strokes themselves (in place of the fill).
+ */
+function patchCrossHatch(icon, notes) {
+  const hatch =
+    "M2.426 15.044 15.044 2.426M7.383 20 20 7.383M0 12.617 12.617 0m-7.98 17.941L17.256 5.324m-2.211 12.25L2.426 4.956M20 12.617 7.383 0m5.234 20L0 7.383m17.941 7.98L5.324 2.745";
+  const d = commandsToPathData(parsePathData(hatch), fitMatrix([1, 0, 0, 1, 0, 0], { width: 20, height: 20 }));
+  const outline = icon.shapes.find((shape) => !shape.filled);
+  if (d && outline) {
+    icon.shapes = [outline, { d, filled: false, strokeWidth: (1.25 * BOX) / 20 }];
+    notes.push("fillcrosshatch <- FillCrossHatchIcon: mask replaced by its hatch strokes drawn directly");
+  }
+}
 
 function main() {
   let source;
@@ -1888,11 +1994,52 @@ function main() {
       continue;
     }
     icons[key] = { shapes: result.shapes };
+    if (component === "FillCrossHatchIcon") {
+      patchCrossHatch(icons[key], notes);
+    }
     if (REUSE_NOTES[key]) {
       notes.push(`${key} <- ${component}: ${REUSE_NOTES[key]}`);
     }
     for (const warning of result.warnings) {
       notes.push(`${key} <- ${component}: ${warning}`);
+    }
+  }
+
+  // Every other icon-like export, keyed by lowercased name (trailing "Icon" dropped
+  // when that key is free). Existing keys above stay stable.
+  const usedComponents = new Set(REQUESTED.flatMap(([, names]) => names));
+  for (const [name, def] of defs) {
+    if (usedComponents.has(name) || NOT_ICONS.has(name)) {
+      continue;
+    }
+    if (!/createIcon\(|React\.memo\(|^[A-Za-z_$]+$/.test(def.rhs.slice(0, 40))) {
+      continue;
+    }
+    const lower = name.toLowerCase();
+    const stripped = lower.endsWith("icon") && lower.length > 4 ? lower.slice(0, -4) : lower;
+    const key = [stripped, lower, name].find((k) => !(k in icons));
+    if (key === undefined) {
+      continue;
+    }
+    // Skip components already emitted under a requested key with identical geometry.
+    let result;
+    try {
+      result = iconShapes(name);
+    } catch (error) {
+      skipped.push(`${key}: extracting ${name} failed (${error.message})`);
+      continue;
+    }
+    if (result.shapes.length === 0) {
+      skipped.push(`${key}: ${name} produced no shapes (${result.warnings.join("; ") || "no convertible shapes"})`);
+      continue;
+    }
+    const signature = JSON.stringify(result.shapes);
+    if (Object.values(icons).some((icon) => JSON.stringify(icon.shapes) === signature)) {
+      continue;
+    }
+    icons[key] = { shapes: result.shapes };
+    for (const warning of result.warnings) {
+      notes.push(`${key} <- ${name}: ${warning}`);
     }
   }
 

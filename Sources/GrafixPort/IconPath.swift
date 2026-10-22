@@ -152,6 +152,7 @@ public struct PortIconView: View {
         shapeView(item.element)
       }
     }
+    .compositingGroup()
     .frame(width: size, height: size)
     .accessibilityHidden(true)
   }
@@ -159,7 +160,10 @@ public struct PortIconView: View {
   private func shapeView(_ shape: IconShape) -> some View {
     let path = Path(SVGPath.cgPath(shape.d, size: CGSize(width: size, height: size)))
     return Group {
-      if shape.filled {
+      if shape.filled && shape.knockout {
+        // Editor-background fill (handlerColor): clear what is beneath inside the icon.
+        path.fill(Color.black).blendMode(.destinationOut)
+      } else if shape.filled {
         path.fill(color)
       } else {
         path.stroke(
