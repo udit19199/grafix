@@ -13,5 +13,6 @@ let package = Package(
   products: [],
   targets: [
     .target(name: "GrafixCore", resources: [.copy("Resources/Fonts")]),
+    .target(name: "GrafixRender", dependencies: ["GrafixCore"]),
   ]
 )
