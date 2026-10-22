@@ -1,53 +1,43 @@
 # Third-party notices
 
-## Rough.js
+Grafix ports code and assets from the following open-source projects.
 
-`Sources/GrafixCore/RoughLine.swift` ports the seeded random generator and line primitives from [Rough.js](https://github.com/rough-stuff/rough), commit `56a2762171b1294d643501e8d14f120db6b27bd7`, `src/math.ts` and `src/renderer.ts`.
+## Excalidraw (MIT)
 
-MIT License
+https://github.com/excalidraw/excalidraw. Copyright (c) 2020 Excalidraw.
 
-Copyright (c) 2019 Preet Shihn
+The following are ported from Excalidraw:
+- Element model and JSON format
+- Shape generation (`packages/element/src/shape.ts` → `Sources/GrafixRender/ShapeGenerator.swift`)
+- Arrowheads, bound-text layout, binding, fractional indexing (CC0)
+- Theme tokens, palette, UI strings, keyboard shortcuts and icons (`Sources/GrafixPort/Generated`)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Excalidraw's icons derive from Font Awesome (CC BY 4.0 / OFL) and Tabler Icons (MIT), as
+attributed in Excalidraw's `components/icons.tsx`.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## Rough.js 4.6.4 (MIT)
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+https://github.com/rough-stuff/rough. Copyright (c) 2019 Preet Shihn.
 
-## Excalidraw design reference
+Ported line by line to `Sources/GrafixRender/Rough`. This includes its dependencies
+`hachure-fill`, `points-on-curve`, `points-on-path` and `path-data-parser` (MIT, Preet Shihn).
 
-The native interface follows [Excalidraw](https://github.com/excalidraw/excalidraw)'s layout and theme values. Excalidraw is licensed under the [MIT license](https://github.com/excalidraw/excalidraw/blob/master/LICENSE).
+## perfect-freehand 1.2.0 (MIT)
 
-MIT License
+https://github.com/steveruizok/perfect-freehand. Copyright (c) 2021 Stephen Ruiz Ltd.
 
-Copyright (c) 2020 Excalidraw
+Ported to `Sources/GrafixRender/Freehand`.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+## Fonts (SIL Open Font License 1.1 unless noted)
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+These fonts are bundled in `Sources/GrafixCore/Resources/Fonts`. They are merged from
+Excalidraw's distribution by `scripts/port/merge-fonts.py`.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+- Excalifont, by Excalidraw / Ján Filípek (OFL)
+- Virgil, by Your Own Font Foundry (OFL)
+- Nunito, by Vernon Adams et al. (OFL)
+- Lilita One, by Juan Montoreano (OFL)
+- Comic Shanns, by jesusmgg (MIT)
+- Cascadia Code, by Microsoft (OFL)
+- Liberation Sans, by Red Hat (OFL)
+- Assistant, by Ben Nathan (OFL), when bundled

@@ -1,93 +1,60 @@
 # Grafix
 
-A native macOS drawing app in Swift, starting from Excalidraw's document format and interaction model. No web view. This repository is an early working port, not yet a replacement for Excalidraw+.
+A native macOS whiteboard that looks and works like Excalidraw, and replaces Excalidraw+ for
+single-user work. It is pure Swift (AppKit + SwiftUI) with no web view. Files are standard
+`.excalidraw` JSON, so they open in excalidraw.com, and Excalidraw+ decks (frames with
+`customData.slidesOrder`) present here as-is.
+
+- **Excalidraw's look:** line-by-line ports of Rough.js 4.6.4 and perfect-freehand 1.2.0 (golden-tested against the JS libraries), Excalidraw's `shape.ts`, its fonts (Excalifont, Nunito, Lilita One, Comic Shanns, Virgil, Cascadia), palette, icons and theme tokens.
+- **Editing:** every Excalidraw tool (selection, lasso, rectangle, diamond, ellipse, arrow, line, freedraw, text, image, eraser, frame, embed, laser, hand), labels in shapes and on arrows, arrows that bind to shapes, groups, alignment, z-order, lock, flip, copy and paste, styles, grid, zen and view mode, dark-only UI, links, and PNG/PDF/.excalidraw export.
+- **Excalidraw+ features:** collections and scenes in a sidebar, presentations (one frame per slide, presenter notes, full-screen presenting with a laser pointer, PDF export) and multiple windows.
+- **Built for AI:** a built-in chat runs Claude Code against Grafix's MCP server, so the agent edits the open scene live. `grafix-mcp` exposes tools modelled on the Excalidraw+ MCP to any agent. [AGENTS.md](AGENTS.md) explains the codebase to coding agents.
 
 ## Run
 
-Requires macOS 14 or later and a Swift 6 toolchain.
+You need macOS 14 or later and Xcode 16 or a Swift 6 toolchain.
 
 ```sh
 swift run Grafix
 ```
 
-Build a local app bundle:
+To build an app bundle that includes the MCP server:
 
 ```sh
 ./scripts/build-app.sh
 open .build/Grafix.app
 ```
 
-Drawings live under `~/Documents/Grafix/`, with a folder per collection. No account or hosted storage is required. Keep backups of important drawings while the port is under development.
+Drawings live in `~/Documents/Grafix/<Collection>/<Scene>.excalidraw`. Set `GRAFIX_ROOT` to use
+another folder.
 
-## First-draft requirements
-
-These are required outcomes, not optional follow-ups:
-
-- Native canvas with Excalidraw's hand-drawn appearance.
-- Collections and presentations.
-- Built-in AI chat that can work on the open drawing.
-- MCP/API access for external agents.
-- Full Excalidraw round-trip compatibility, including properties the editor does not yet understand.
-
-The implementation starts with JSON property preservation, native drawing tools, a local MCP process, and a Codex chat panel. Preserving JSON does not establish rendering or editing compatibility. Exact sketch rendering, typography, bound-element geometry, all element types, and live agent coordination need independent verification before the compatibility requirement is complete.
-
-## Built-in chat
-
-The chat panel uses an installed and authenticated `codex` CLI. It sends the current drawing and your message to Codex, then offers a proposed canvas update. Applying it uses the editor's undo path. AI inference still requires your existing subscription or provider access; local storage does not make inference free.
-
-## Checks
+## Connect an agent (MCP)
 
 ```sh
-swift test
-xcrun swift-format lint --strict --recursive Package.swift Sources Tests
+swift build -c release --product grafix-mcp
 ```
-
-The Swift tests cover document preservation and safe saves. Excalidraw's JavaScript test suite cannot verify the native UI unchanged. A native interaction check and ported geometry/rendering cases are still required.
-
-## Development status
-
-No cloud deployment, GitHub repository, or release publication is configured. The local Git repository is the working source.
-
-### What is implemented now
-
-- SwiftUI app shell and AppKit canvas, without a browser or web view.
-- Shapes, text, arrows, freehand strokes, images from imported files, selection, dragging, resizing, and undo.
-- Folder-based collections, atomic autosave, stale-save rejection, and recovery copies.
-- Frame presentations in a sheet.
-- Built-in Codex chat with explicit proposal application and stale-proposal rejection.
-- Stdio MCP tools `list_drawings`, `read_scene`, `create_scene`, and `patch_elements`.
-
-### What is not complete
-
-- Seeded line primitives are ported from Rough.js and checked against upstream coordinates. Rectangles, diamonds, lines, and arrows use those primitives. Ellipses and other rendering still use approximations; this is not complete Rough.js parity.
-- Moving or resizing imported shapes does not yet reposition bound arrows or bound text.
-- Rotation/alignment controls, complete font/layout fidelity, and all element-specific rendering are missing.
-- Presentations are not yet fullscreen and have no PDF/PowerPoint export.
-- MCP edits reload through the file store. They are not yet live editor commands with a shared transaction history, selection control, or rendered-scene feedback.
-- There is no HTTP API or public link hosting yet.
-- Chat requires the installed Codex CLI. Claude and other providers are not wired yet.
-
-### Connect an MCP client
-
-Build with `swift build --product grafix-mcp`, then use this server definition in your client's MCP configuration. Other collections can be selected by changing `--directory`.
 
 ```json
 {
   "mcpServers": {
-    "grafix": {
-      "command": "/Users/uditagarwal19199/Workspace/grafix/.build/debug/grafix-mcp",
-      "args": ["--directory", "/Users/uditagarwal19199/Documents/Grafix/Personal"]
-    }
+    "grafix": { "command": "/path/to/grafix/.build/release/grafix-mcp" }
   }
 }
 ```
 
-Run the MCP transport and storage smoke check with `python3 scripts/mcp-smoke.py`. It uses a temporary drawing library, not your real drawings.
+Tools include `list_collections`, `list_scenes`, `create_scene`, `get_scene_content`,
+`search_scene_content`, `edit_scene_content` (add, update, delete and z-order, with tempIds,
+labels and bindings), `create_slide`, `list_slides`, `update_slide`, `add_image`,
+`take_screenshot`, `get_editor_state` (what the app has open and selected) and format guides.
+Agent edits show up in the open app within half a second and can be undone with Cmd+Z.
 
-Native UI verification was attempted on 2026-10-18. The app bundle built and the macOS launch command succeeded, but Computer Use failed twice with `Sky Computer Use native pipe startup failed`. Canvas interactions, rendered appearance, and the complete in-app chat/apply flow remain unverified.
+## Develop
 
-## UI reference
+```sh
+swift test                     # model, rendering golden tests, ported data
+python3 scripts/mcp-smoke.py   # MCP end to end
+swift run grafix-dev render scene.excalidraw out.png
+```
 
-Use Excalidraw's existing design, not a new Grafix visual identity. The native UI follows its canvas-first layout and floating control panels. Primary references are [LayerUI](https://github.com/excalidraw/excalidraw/blob/master/packages/excalidraw/components/LayerUI.tsx) and [theme.scss](https://github.com/excalidraw/excalidraw/blob/master/packages/excalidraw/css/theme.scss). The light theme uses white islands, `#6965db` primary, `#e0dfff` selection backgrounds, and 8-point panel corners.
-
-The user's open Excalidraw Plus tab could not be inspected: two integrated-browser snapshots and a direct page read timed out; the fallback in-app browser reported unavailable. Therefore this UI pass uses the public editor source, not a verified reproduction of the private Plus workspace.
+See [AGENTS.md](AGENTS.md) for the architecture, invariants and recipes. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for licences.
