@@ -12,6 +12,8 @@ let package = Package(
   platforms: [.macOS(.v14)],
   products: [
     .executable(name: "Grafix", targets: ["GrafixApp"]),
+    .executable(name: "grafix-mcp", targets: ["GrafixMCP"]),
+    .executable(name: "grafix-dev", targets: ["GrafixDev"]),
   ],
   targets: [
     .target(name: "GrafixCore", resources: [.copy("Resources/Fonts")]),
@@ -22,5 +24,8 @@ let package = Package(
       dependencies: ["GrafixCore", "GrafixRender", "GrafixPort"],
       exclude: ["Resources/AppIcon.icns"]
     ),
+    .executableTarget(name: "GrafixMCP", dependencies: ["GrafixCore", "GrafixRender"]),
+    // Developer tool: render scenes to PNG, run benchmarks (see AGENTS.md).
+    .executableTarget(name: "GrafixDev", dependencies: ["GrafixCore", "GrafixRender"]),
   ]
 )
