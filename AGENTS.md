@@ -42,7 +42,7 @@ missing, clone `https://github.com/excalidraw/excalidraw` there. Look in
 6. **Deletion is soft** (`isDeleted = true`). Rendering skips deleted elements and saving keeps them, as Excalidraw does.
 7. **Array order is z-order.** `index` is a fractional key that `Scene.encoded()` re-syncs. Frames sit below their children.
 8. **Main thread:** `EditorDocument` and the canvas are `@MainActor`. Rendering into the static layer happens off the main thread on a copy of the scene, which is a value type.
-9. **Never write to `~/Documents/Grafix` in tests or experiments.** Set `GRAFIX_ROOT` to a temporary directory.
+9. **Never write to `~/Documents/Grafix` in experiments or scripts.** Set `GRAFIX_ROOT` to a temporary directory.
 
 ## Performance model
 
@@ -56,13 +56,18 @@ missing, clone `https://github.com/excalidraw/excalidraw` there. Look in
 
 ```sh
 swift build                       # everything
-swift test                        # Core, Render (Rough.js/perfect-freehand golden tests), Port
 python3 scripts/mcp-smoke.py      # MCP end-to-end against a temp workspace
 ./scripts/build-app.sh            # .build/Grafix.app (release) with grafix-mcp inside
 ```
 
-Rendering parity: the golden tests compare our Rough.js and perfect-freehand output with the JS
-libraries (`scripts/port/rough-golden.mjs`, `freehand-golden.mjs`), to within 1e-9.
+**There is no test target, on purpose.** Agents maintain this repo, and tests written and rewritten
+by the same agents just mirror the code. Do not add a `Tests/` directory or a test target, and do
+not claim `swift test` passes. Verify with `swift build`, `scripts/mcp-smoke.py` and the headless
+snapshot below. The owner will add a few hand-written tests later; keep those and don't rewrite them.
+
+Rendering parity: `scripts/port/rough-golden.mjs` and `freehand-golden.mjs` generate reference
+output from the JS libraries. Compare ours against it by hand when you touch the Rough.js or
+perfect-freehand ports.
 
 ### Seeing the app without screen control
 

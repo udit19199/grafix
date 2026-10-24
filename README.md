@@ -5,7 +5,7 @@ single-user work. It is pure Swift (AppKit + SwiftUI) with no web view. Files ar
 `.excalidraw` JSON, so they open in excalidraw.com, and Excalidraw+ decks (frames with
 `customData.slidesOrder`) present here as-is.
 
-- **Excalidraw's look:** line-by-line ports of Rough.js 4.6.4 and perfect-freehand 1.2.0 (golden-tested against the JS libraries), Excalidraw's `shape.ts`, its fonts (Excalifont, Nunito, Lilita One, Comic Shanns, Virgil, Cascadia), palette, icons and theme tokens.
+- **Excalidraw's look:** line-by-line ports of Rough.js 4.6.4 and perfect-freehand 1.2.0 (checked against the JS libraries when ported), Excalidraw's `shape.ts`, its fonts (Excalifont, Nunito, Lilita One, Comic Shanns, Virgil, Cascadia), palette, icons and theme tokens.
 - **Editing:** every Excalidraw tool (selection, lasso, rectangle, diamond, ellipse, arrow, line, freedraw, text, image, eraser, frame, embed, laser, hand), labels in shapes and on arrows, arrows that bind to shapes, groups, alignment, z-order, lock, flip, copy and paste, styles, grid, zen and view mode, dark-only UI, links, and PNG/PDF/.excalidraw export.
 - **Excalidraw+ features:** collections and scenes in a sidebar, presentations (one frame per slide, presenter notes, full-screen presenting with a laser pointer, PDF export) and multiple windows.
 - **Built for AI:** a built-in chat runs Claude Code against Grafix's MCP server, so the agent edits the open scene live. `grafix-mcp` exposes tools modelled on the Excalidraw+ MCP to any agent. [AGENTS.md](AGENTS.md) explains the codebase to coding agents.
@@ -50,8 +50,13 @@ Agent edits show up in the open app within half a second and can be undone with 
 
 ## Develop
 
+**Tests:** there is no test suite on purpose. Coding agents maintain this code (see
+[AGENTS.md](AGENTS.md)), and tests that agents also write and rewrite mostly just follow the code
+and prove nothing. Agents check their work with `swift build`, `scripts/mcp-smoke.py` and the
+headless snapshot mode. I will add a few hand-written tests later.
+
 ```sh
-swift test                     # model, rendering golden tests, ported data
+swift build                    # everything compiles
 python3 scripts/mcp-smoke.py   # MCP end to end
 swift run grafix-dev render scene.excalidraw out.png
 ```
